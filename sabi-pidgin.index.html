@@ -1,0 +1,816 @@
+<title>Sabi Pidgin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:wght@400;700&display=swap">
+<style>
+  :root{
+    --bg:#FBF6EC; --surface:#FFFFFF; --surface-2:#F3ECD8; --raise:#FFFDF7;
+    --ink:#1B1F17; --ink-dim:#6E6A55; --line:#E5DBC0;
+    --green:#0B6E4F; --green-ink:#FFFFFF;
+    --yellow:#E0A11B; --yellow-ink:#1B1F17;
+    --absent:#B4AB93; --absent-ink:#FFFFFF;
+    --pop:#C63B23;
+    --key:#EBE1C7; --key-ink:#1B1F17;
+    --focus:#0B6E4F;
+    --shadow:0 1px 0 rgba(27,31,23,.04), 0 14px 34px -18px rgba(27,31,23,.30);
+    --shadow-sm:0 1px 0 rgba(27,31,23,.05), 0 6px 16px -10px rgba(27,31,23,.28);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14180F; --surface:#1E2317; --surface-2:#262C1D; --raise:#222818;
+      --ink:#F2EDDB; --ink-dim:#A6A187; --line:#333A28;
+      --green:#2E9E6F; --green-ink:#0E140D;
+      --yellow:#E0A83A; --yellow-ink:#14180F;
+      --absent:#4B5140; --absent-ink:#F2EDDB;
+      --pop:#E56340;
+      --key:#2C3221; --key-ink:#F2EDDB;
+      --focus:#5BC79A;
+      --shadow:0 1px 0 rgba(0,0,0,.25), 0 16px 38px -18px rgba(0,0,0,.6);
+      --shadow-sm:0 1px 0 rgba(0,0,0,.25), 0 8px 18px -10px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14180F; --surface:#1E2317; --surface-2:#262C1D; --raise:#222818;
+    --ink:#F2EDDB; --ink-dim:#A6A187; --line:#333A28;
+    --green:#2E9E6F; --green-ink:#0E140D;
+    --yellow:#E0A83A; --yellow-ink:#14180F;
+    --absent:#4B5140; --absent-ink:#F2EDDB;
+    --pop:#E56340;
+    --key:#2C3221; --key-ink:#F2EDDB;
+    --focus:#5BC79A;
+    --shadow:0 1px 0 rgba(0,0,0,.25), 0 16px 38px -18px rgba(0,0,0,.6);
+    --shadow-sm:0 1px 0 rgba(0,0,0,.25), 0 8px 18px -10px rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Newsreader",Georgia,"Times New Roman",serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex; justify-content:center;
+    padding:clamp(14px,4vw,40px) 16px 40px;
+    min-height:100vh;
+  }
+  .app{width:100%; max-width:600px}
+  .eyebrow{
+    font-family:"Space Mono",ui-monospace,monospace;
+    text-transform:uppercase; letter-spacing:.22em; font-size:.66rem;
+    color:var(--ink-dim);
+  }
+  h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif; margin:0; text-wrap:balance; line-height:1.02}
+  button{font-family:inherit; cursor:pointer; color:inherit}
+  :focus-visible{outline:2.5px solid var(--focus); outline-offset:2px; border-radius:6px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+  /* ---------- screens ---------- */
+  .screen{display:block}
+  .screen[hidden]{display:none!important}
+
+  /* ---------- HOME ---------- */
+  .home-head{text-align:center; padding:clamp(18px,7vw,54px) 0 clamp(20px,6vw,40px)}
+  .wordmark{
+    font-size:clamp(3rem,15vw,4.75rem); font-weight:800; letter-spacing:-.03em;
+    color:var(--ink);
+  }
+  .wordmark .sabi{color:var(--green)}
+  .home-head p{
+    margin:.9rem auto 0; max-width:32ch; color:var(--ink-dim);
+    font-size:1.06rem; line-height:1.5;
+  }
+  .modes{display:flex; flex-direction:column; gap:14px}
+  .mode{
+    display:grid; grid-template-columns:1fr auto; align-items:center; gap:16px;
+    width:100%; text-align:left; border:1px solid var(--line);
+    background:var(--surface); border-radius:20px; padding:22px 22px;
+    box-shadow:var(--shadow-sm); transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .mode:hover{transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--green)}
+  .mode:active{transform:translateY(-1px)}
+  .mode h2{font-size:1.5rem; letter-spacing:-.02em}
+  .mode p{margin:.35rem 0 0; color:var(--ink-dim); font-size:.98rem; line-height:1.45; max-width:34ch}
+  .mode .go{
+    font-family:"Space Mono",monospace; font-size:1.4rem; color:var(--green);
+    width:44px; height:44px; display:grid; place-items:center;
+    border:1px solid var(--line); border-radius:50%; background:var(--surface-2);
+  }
+  .chip-tiles{display:flex; gap:5px; margin-top:12px}
+  .chip-tiles span{
+    width:26px; height:26px; border-radius:6px; display:grid; place-items:center;
+    font-family:"Space Mono",monospace; font-weight:700; font-size:.8rem;
+    color:var(--absent-ink); background:var(--absent);
+  }
+  .chip-tiles span.g{background:var(--green); color:var(--green-ink)}
+  .chip-tiles span.y{background:var(--yellow); color:var(--yellow-ink)}
+  .home-foot{
+    margin-top:26px; text-align:center; color:var(--ink-dim);
+    font-family:"Space Mono",monospace; font-size:.74rem; letter-spacing:.04em;
+  }
+  .home-foot b{color:var(--ink); font-weight:700}
+
+  /* ---------- sub-screen header ---------- */
+  .bar{
+    display:flex; align-items:center; gap:12px; margin-bottom:18px;
+    padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .back{
+    border:1px solid var(--line); background:var(--surface); border-radius:12px;
+    width:40px; height:40px; font-size:1.25rem; line-height:1; display:grid; place-items:center;
+    flex:0 0 auto;
+  }
+  .back:hover{border-color:var(--green); color:var(--green)}
+  .bar h2{font-size:1.18rem; letter-spacing:-.01em; flex:1 1 auto}
+  .stat{
+    font-family:"Space Mono",monospace; font-size:.76rem; color:var(--ink-dim);
+    text-align:right; white-space:nowrap;
+  }
+  .stat b{color:var(--ink)}
+
+  /* ---------- GAME ---------- */
+  .game-wrap{display:flex; flex-direction:column; align-items:center; gap:18px}
+  .grid{
+    display:grid; gap:6px; width:min(100%, calc(var(--len,5) * 60px));
+    grid-template-columns:repeat(var(--len,5), minmax(0,1fr));
+  }
+  .tile{
+    aspect-ratio:1/1; display:grid; place-items:center;
+    font-family:"Space Mono",monospace; font-weight:700;
+    font-size:clamp(1.05rem,6.5vw,1.7rem); text-transform:uppercase;
+    border:2px solid var(--line); border-radius:10px; background:var(--raise);
+    color:var(--ink); user-select:none;
+    transition:transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .tile.filled{border-color:var(--ink-dim); transform:scale(1.02)}
+  .tile.reveal{animation:flip .55s ease forwards}
+  .tile.correct{background:var(--green); border-color:var(--green); color:var(--green-ink)}
+  .tile.present{background:var(--yellow); border-color:var(--yellow); color:var(--yellow-ink)}
+  .tile.absent{background:var(--absent); border-color:var(--absent); color:var(--absent-ink)}
+  @keyframes flip{
+    0%{transform:rotateX(0)}
+    45%{transform:rotateX(90deg)}
+    100%{transform:rotateX(0)}
+  }
+  @keyframes shake{
+    10%,90%{transform:translateX(-2px)} 30%,70%{transform:translateX(4px)} 50%{transform:translateX(-6px)}
+  }
+  .grid.bad{animation:shake .4s ease}
+
+  .hintrow{display:flex; align-items:center; gap:10px; min-height:34px; flex-wrap:wrap; justify-content:center}
+  .hint-btn{
+    font-family:"Space Mono",monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.14em;
+    border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:7px 14px;
+  }
+  .hint-btn:hover{border-color:var(--green); color:var(--green)}
+  .hint-text{
+    font-size:1.02rem; color:var(--ink-dim); font-style:italic; text-align:center;
+  }
+  .hint-text b{color:var(--ink); font-style:normal}
+  .msg{
+    min-height:1.2rem; font-family:"Space Mono",monospace; font-size:.78rem;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--pop); text-align:center;
+  }
+
+  .keyboard{display:flex; flex-direction:column; gap:6px; width:100%; margin-top:2px}
+  .krow{display:flex; gap:5px; justify-content:center}
+  .k{
+    flex:1 1 auto; min-width:0; height:clamp(46px,13vw,56px);
+    border:1px solid var(--line); background:var(--key); color:var(--key-ink);
+    border-radius:9px; font-family:"Space Mono",monospace; font-weight:700; font-size:.82rem;
+    text-transform:uppercase; display:grid; place-items:center;
+    transition:transform .08s ease, background .12s ease, color .12s ease, border-color .12s ease;
+  }
+  .k:active{transform:translateY(2px)}
+  .k.wide{flex:1.6 1 auto; font-size:.6rem; letter-spacing:.03em}
+  .k[data-state="correct"]{background:var(--green); color:var(--green-ink); border-color:var(--green)}
+  .k[data-state="present"]{background:var(--yellow); color:var(--yellow-ink); border-color:var(--yellow)}
+  .k[data-state="absent"]{background:var(--absent); color:var(--absent-ink); border-color:var(--absent)}
+
+  .result{
+    width:100%; border:1px solid var(--line); border-radius:18px; background:var(--surface);
+    padding:20px 20px 22px; text-align:center; box-shadow:var(--shadow-sm);
+  }
+  .result[hidden]{display:none}
+  .result .eyebrow{color:var(--green)}
+  .result.lose .eyebrow{color:var(--pop)}
+  .result .bigword{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
+    font-size:clamp(2rem,10vw,3rem); letter-spacing:-.02em; margin:.35rem 0 .1rem;
+  }
+  .result .trans{font-size:1.16rem; line-height:1.4}
+  .result .ex{
+    margin:.7rem auto 0; max-width:40ch; color:var(--ink-dim);
+    border-left:2px solid var(--yellow); padding-left:12px; text-align:left; font-size:1rem;
+  }
+  .result .ex i{display:block; font-family:"Space Mono",monospace; font-style:normal; font-size:.82rem; color:var(--ink); margin-bottom:2px}
+  .btn{
+    margin-top:16px; border:none; background:var(--green); color:var(--green-ink);
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:600; font-size:1rem;
+    border-radius:12px; padding:13px 22px; width:100%;
+  }
+  .btn:hover{filter:brightness(1.06)}
+  .btn.ghost{background:var(--surface-2); color:var(--ink); border:1px solid var(--line)}
+
+  /* ---------- FLASHCARDS ---------- */
+  .filters{display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:6px; scrollbar-width:thin}
+  .filters button{
+    flex:0 0 auto; border:1px solid var(--line); background:var(--surface);
+    border-radius:999px; padding:8px 14px; font-family:"Space Mono",monospace;
+    font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-dim);
+  }
+  .filters button[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+
+  .card-stage{perspective:1200px; margin:6px 0 4px}
+  .card{
+    position:relative; width:100%; min-height:320px;
+    border:1px solid var(--line); border-radius:22px; background:var(--surface);
+    box-shadow:var(--shadow); padding:34px 26px 42px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    text-align:center; gap:14px; cursor:pointer;
+    transition:transform .16s ease, background .22s ease;
+  }
+  .card.is-back{background:var(--surface-2)}
+  .card.flipping{transform:rotateX(86deg)}
+  .card .eyebrow{position:absolute; top:18px; left:0; right:0}
+  .card .topic{
+    position:absolute; bottom:16px; left:0; right:0;
+    font-family:"Space Mono",monospace; font-size:.64rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink-dim);
+  }
+  .card .word{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
+    font-size:clamp(2rem,10vw,3.2rem); letter-spacing:-.025em; line-height:1.03;
+  }
+  .card .example{
+    font-family:"Space Mono",monospace; font-size:.9rem; color:var(--ink-dim);
+    max-width:34ch; line-height:1.5;
+  }
+  .card .trans{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:600;
+    font-size:clamp(1.4rem,6.5vw,2rem); letter-spacing:-.015em; line-height:1.15;
+  }
+  .card .meaning{font-size:1.06rem; line-height:1.5; max-width:36ch; color:var(--ink)}
+  .card .meaning::before{content:"“"} .card .meaning::after{content:"”"}
+  .flip-hint{
+    text-align:center; font-family:"Space Mono",monospace; font-size:.66rem;
+    text-transform:uppercase; letter-spacing:.14em; color:var(--ink-dim); margin:8px 0 12px;
+  }
+
+  .learn-row{display:flex; gap:10px; margin-bottom:12px}
+  .learn-row button{
+    flex:1; border-radius:12px; padding:12px 8px; font-family:"Bricolage Grotesque",sans-serif;
+    font-weight:600; font-size:.95rem; border:1px solid var(--line); background:var(--surface);
+  }
+  .learn-row .know:hover{border-color:var(--green); color:var(--green)}
+  .learn-row .still:hover{border-color:var(--pop); color:var(--pop)}
+  .learn-row button.on.know{background:var(--green); color:var(--green-ink); border-color:var(--green)}
+  .learn-row button.on.still{background:var(--pop); color:#fff; border-color:var(--pop)}
+
+  .nav-row{display:flex; align-items:center; gap:10px}
+  .nav-row button{
+    border:1px solid var(--line); background:var(--surface); border-radius:12px;
+    height:46px; font-family:"Space Mono",monospace; font-weight:700; font-size:.9rem;
+  }
+  .nav-row .prev,.nav-row .next{flex:1}
+  .nav-row .shuffle{flex:0 0 auto; width:52px; font-size:1.1rem}
+  .nav-row button:hover{border-color:var(--green); color:var(--green)}
+  .progress{
+    text-align:center; font-family:"Space Mono",monospace; font-size:.74rem;
+    color:var(--ink-dim); margin-top:12px; letter-spacing:.06em;
+  }
+  .empty{text-align:center; color:var(--ink-dim); padding:60px 20px; font-size:1.05rem}
+</style>
+
+<div class="app">
+
+  <!-- ============ HOME ============ -->
+  <section class="screen" id="home">
+    <div class="home-head">
+      <div class="eyebrow">Naija Pidgin &nbsp;·&nbsp; learn small-small</div>
+      <h1 class="wordmark"><span class="sabi">Sabi</span> Pidgin</h1>
+      <p>Two ways to grow your Naija Pidgin — guess the hidden word, or flip through everyday phrases.</p>
+    </div>
+
+    <div class="modes">
+      <button class="mode" data-goto="game">
+        <div>
+          <h2>Word Game</h2>
+          <p>Crack the hidden Pidgin word in six tries. A fresh word every round.</p>
+          <div class="chip-tiles" aria-hidden="true">
+            <span class="g">S</span><span class="y">A</span><span>B</span><span class="g">I</span>
+          </div>
+        </div>
+        <span class="go" aria-hidden="true">→</span>
+      </button>
+
+      <button class="mode" data-goto="cards">
+        <div>
+          <h2>Flashcards</h2>
+          <p>Flip through <b id="card-count">159</b> real phrases with meanings and example lines.</p>
+        </div>
+        <span class="go" aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <div class="home-foot" id="home-foot"></div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section class="screen" id="game" hidden>
+    <div class="bar">
+      <button class="back" data-goto="home" aria-label="Back to menu">‹</button>
+      <h2>Word Game</h2>
+      <div class="stat" id="streak-stat"></div>
+    </div>
+
+    <div class="game-wrap">
+      <div class="grid" id="grid" role="grid" aria-label="Guess grid"></div>
+
+      <div class="hintrow">
+        <button class="hint-btn" id="hint-btn">Show hint</button>
+        <div class="hint-text" id="hint-text" hidden></div>
+      </div>
+
+      <div class="msg" id="msg" role="status" aria-live="polite"></div>
+
+      <div class="result" id="result" hidden>
+        <div class="eyebrow" id="result-eyebrow">You sabi!</div>
+        <div class="bigword" id="result-word">SABI</div>
+        <div class="trans" id="result-trans"></div>
+        <div class="ex" id="result-ex" hidden></div>
+        <button class="btn" id="again-btn">Play another word</button>
+      </div>
+
+      <div class="keyboard" id="keyboard" aria-label="Keyboard"></div>
+    </div>
+  </section>
+
+  <!-- ============ FLASHCARDS ============ -->
+  <section class="screen" id="cards" hidden>
+    <div class="bar">
+      <button class="back" data-goto="home" aria-label="Back to menu">‹</button>
+      <h2>Flashcards</h2>
+      <div class="stat" id="card-progress-top"></div>
+    </div>
+
+    <div class="filters" id="filters"></div>
+
+    <div id="card-area">
+      <div class="card-stage">
+        <div class="card" id="card" role="button" tabindex="0" aria-label="Flashcard, activate to flip">
+          <div class="eyebrow" id="c-side">Pidgin</div>
+          <div class="word" id="c-word"></div>
+          <div class="example" id="c-example"></div>
+          <div class="trans" id="c-trans" hidden></div>
+          <div class="meaning" id="c-meaning" hidden></div>
+          <div class="topic" id="c-topic"></div>
+        </div>
+      </div>
+      <div class="flip-hint">Tap the card to flip</div>
+
+      <div class="learn-row">
+        <button class="know" id="know-btn">Know am ✓</button>
+        <button class="still" id="still-btn">Still learning</button>
+      </div>
+
+      <div class="nav-row">
+        <button class="prev" id="prev-btn">← Prev</button>
+        <button class="shuffle" id="shuffle-btn" aria-label="Shuffle deck">⇄</button>
+        <button class="next" id="next-btn">Next →</button>
+      </div>
+      <div class="progress" id="card-progress"></div>
+    </div>
+
+    <div class="empty" id="cards-empty" hidden>Nothing to review here yet — mark a few cards “Still learning”.</div>
+  </section>
+
+</div>
+
+<script>
+const CARDS=[["How far?","How are you?","Friend, how are things?","My person, how far?","Greetings & Pleasantries"],["You nko?","And you?","I'm okay, what about you?","I dey ok, you nko?","Common Questions"],["Who go pay?","Who is paying?","We've eaten, who's paying?","We don chop, who go pay?","Common Questions"],["Shey?","Right? / Is it?","You are coming, right?","You go come, shey?","Greetings & Pleasantries"],["Na so","That’s right","That is how we do it.","Na so we dey do am.","Greetings & Pleasantries"],["A-beg","Please","Please, move over a bit.","A-beg, shift small.","Greetings & Pleasantries"],["I dey fine","I am fine","No trouble, I am doing well.","No shaking, I dey fine.","Greetings & Pleasantries"],["Kedu?","How are you? (Igbo origin)","How are you, my sister?","Kedu, my sister?","Greetings & Pleasantries"],["Which one?","Which/What's up?","What is your problem?","Which one be your own?","Common Questions"],["Wetin?","What?","What did you say?","Wetin you talk?","Common Questions"],["Urgent 2k","Small emergency fund","Please, I need a quick $5.","A-beg, I need urgent 2k.",""],["Hustle","Hard work / Grind","We are working hard out here.","We dey hustle for street.",""],["Kpa / Ego","Money","The money has arrived.","The kpa don land.",""],["Oga","Boss","My boss hasn't paid me yet.","My oga never pay me.",""],["Ghana Must Go","Large bag / Big money","He's carrying a huge bag.","He carry Ghana Must Go.",""],["Hammer","To hit it big","My friend has become rich!","My guy don hammer!",""],["Magun","Bad luck / Taboo","That business is bad news.","That business na magun.",""],["Wayray","Someone acting crazy","That crazy manager!","That wayray manager!",""],["Doings","Wealthy display","Look at this display of wealth!","See doings for here!",""],["Manage","To endure / Make do","Accept this small amount.","Manage this small thing.",""],["Chop","To eat","Come, let’s eat.","Come make we chop.",""],["Small Chops","Appetizers","Are they serving snacks?","They serve small chops?",""],["Swallow","Starchy sides (Eba/Fufu)","I want a filling starch meal.","I want heavy swallow.",""],["Pikin","Child","Your child has grown.","Your pikin don grow.",""],["Madam","Wife / Female boss","I will ask my wife.","I go ask my madam.",""],["Senior Brother","Older brother","My older brother is coming.","My senior brother dey come.",""],["Shine eye","Be vigilant","Be careful at the market.","Shine eye for market.",""],["Mineral","Soda/Soft drink","Bring one cold soda.","Bring one cold mineral.",""],["Jollof","Rice dish / Great vibes","The party rice was delicious.","The party jollof sweet.",""],["Belle","Stomach / Pregnancy","I am very happy.","My belle dey sweet me.",""],["Wahala","Trouble","Trouble or problem","Too much wahala!",""],["Gbege","Big trouble","Big trouble has started.","Gbege don burst.",""],["Vex","To be angry","Don't be angry with me.","No vex for me.",""],["Para","To flare up","Why are you acting aggressive?","Why you dey para?",""],["Ment","Mentally unstable","Are you crazy?","You dey ment?",""],["Gbam!","Exactly!","You said it exactly right!","You talk am, gbam!",""],["Lamba","Lies / Tall tales","Don't lie to me.","No give me lamba.",""],["Fall my hand","To disappoint","My friend disappointed me.","My guy fall my hand.",""],["Taya","Tired","I am tired of this life.","I don taya for this life.",""],["Ginger","Motivation / Energy","Give them the energy!","Give them the ginger!",""],["I go change am for you","I will deal with you","I’ll deal with you","No try me, I go change am for you!",""],["Draw rain","To provoke","Cause trouble or attract problems","No draw rain for this house today.",""],["Agbero","Tout / Street thug","Motor park tout/street hustler","Move fast before agbero come.",""],["Bone face","To frown / Ignore","Serious or unfriendly expression","Why you dey bone face for me?",""],["Gbarada","Boasting","Sudden confusion or problem","All that one na gbarada.",""],["No be small thing","It's a big deal","It’s serious/intense","That wedding no be small thing o.",""],["Mtcheew","(Sucking teeth)","Sound expressing annoyance/disgust","Sound of annoyance",""],["True word","Truth","That’s true","My brother, you talk true word.",""],["Lai-lai","Never / No way","Never","I no go go there, lai-lai!",""],["I second am","I agree","I agree with that","Wetin he talk, I second am.",""],["Body dey sweet me","I am very happy","I feel happy/good","My result out, body dey sweet me!",""],["Cold water","Calm down","Discouragement","Take cold water for your mind.",""],["Eye dirty","Greedy","To be jealous or greedy","That man eye dirty for money.",""],["Heart cut","To be startled","To feel disappointed or hurt","My heart cut when the door open.",""],["I no fit shout","I’m speechless","I’m speechless/amazed","The thing shock me, I no fit shout.",""],["Beta chop","Delicious meal","Better food or enjoyment","My mama cook beta chop.",""],["Over-fed","Full / Satisfied","Spoilt or pampered","I don over-fed, I no fit move.",""],["Bottle","Beer / Drink","To trap or corner someone","Make we go drink two bottle.",""],["Parboiled","Half-cooked","Partially cooked","The rice still be parboiled.",""],["Chop-remain","Leftovers","Leftover food","Put the chop-remain for fridge.",""],["Work-chop","Low-paying job","Earnings from work","That one na work-chop business.",""],["Bar","Money (Slang)","Beer parlour/pub","I need some bar for my pocket.",""],["Level don change","Status has improved","Things have changed/improved","Since he buy car, level don change.",""],["Wash","To celebrate a purchase","To deceive or exaggerate","You buy car? You must wash am!",""],["Awoof","Freebie / Gift","Free thing/freebie","I love awoof things well-well.",""],["White-collar","Office job","Office/professional job","I dey find white-collar work.",""],["Close work","End of shift","Skilled or detailed work","Wetin time you dey close work?",""],["Overtime","Extra work","Extra work hours","I dey do overtime this week.",""],["Staff","Employee","Employees/workers","All the staff dey for meeting.",""],["Settle","To bribe / Pay off","To bribe, compensate, or resolve","You must settle the boys for gate.",""],["One-way","Wrong direction","Driving against traffic","No enter one-way, police dey there.",""],["Hold-up","Traffic jam","Traffic jam","Hold-up for bridge no be here.",""],["Conductor","Bus assistant","Bus fare collector","Give the conductor your money.",""],["Jump bus","To commute via bus","Board a bus quickly","I dey jump bus go office.",""],["Leg-work","Walking / Running errands","Running around to get things done","I don do too much leg-work today.",""],["House-help","Domestic assistant","Domestic worker","Our house-help don go village.",""],["Junior","Younger sibling","Younger person or child","My junior brother dey school.",""],["Extended","Distant relatives","Pregnant","All my extended family dey come.",""],["Yard","Home / Compound","House/home","I dey for my yard.",""],["Training","Upbringing","Apprenticeship or learning work","That pikin get good training.",""],["Night-out","Clubbing / Party","Evening social outing","The night-out was too loud.",""],["Shayo","Alcohol","Alcohol","The shayo for the party too much.",""],["MC","Master of ceremonies","Master of ceremonies","The MC sabi talk well-well.",""],["Souvenir","Party favor","Gift or giveaway","I no get my souvenir yet.",""],["Dancer","Someone who dances","Someone stylish or flashy","See that fine dancer for stage.",""],["Eye-service","Pretending to work","Pretending to work hard when watched","No do eye-service for here.",""],["Carry go","Permission to proceed","Keep it up/continue","You don pay? Okay, carry go.",""],["Look-u-look-u","Someone who stares","To stare around aimlessly","No be look-u-look-u be the work.",""],["Akata","Overseas / Abroad","Foreign black person, often African American","My brother dey for Akata.",""],["Yabb","To tease / Insult","To mock or insult","Why you dey yabb me?",""],["Match","Football game","Football game or competition","You watch the match yesterday?",""],["Post","Goal post","Goalpost or position","The ball hit the post.",""],["Jersey","Sports shirt","Shirt/top","My jersey don dirty.",""],["Referee","Umpire","Mediator or judge","The referee no sabi work.",""],["Draft","Board game","To cheat or scam","Come make we play draft.",""],["Sharp-sharp","Quickly","Quickly","Do am sharp-sharp.",""],["Small-time","Later","Soon or after a short while","I go see you small-time.",""],["Since","A long time ago","Because/since when","I don dey wait for you since.",""],["Christmas","Holidays","Something special or luxurious","We go go village for Christmas.",""],["Today-today","This very day","Immediately or nowadays","I want my money today-today.",""],["Which side?","Where?","Which area/place?","Which side you dey go?",""],["Who be that?","Who is that?","Who is that?","Who be that person for door?",""],["How market?","How is business?","How are things/business?","My oga, how market?",""],["Where you dey?","Where are you?","Where are you?","I dey call you, where you dey?",""],["You hear?","Do you understand?","Do you understand?","No late, you hear?",""],["Comot","To leave / Go","Leave/go away/remove","Comot for road!",""],["Sabi","To know","To know or understand","You sabi cook?",""],["God e-p","God helped","God forbid","We survived, God e-p.",""],["No shaking","No problem","No problem","Everything is cool, no shaking.",""],["Carry-over","Remainder / Debt","Failed subject carried forward","I get carry-over for that shop.",""],["Ojoro","Cheating","Corruption or cheating","No play me ojoro.",""],["Okrika","Second-hand clothes","Second-hand clothes/items","This shirt na okrika.",""],["Dem-dem","Those people","Those people/them","No follow dem-dem waka.",""],["Yarn","To talk / Speak","Talk/speak","Wetin you dey yarn?",""],["Fiam","Very fast","Instantly/immediately","The car just go fiam!",""],["Donatus","Someone who gives too much","Someone who likes freebies","No be every time you go be Donatus.",""],["Pally","Friend / Buddy","Friend/close associate","That one na my pally.",""],["Gbege","Big trouble","Big problem/confusion","Gbege don burst for market.",""],["K-leg","Complication","Something suspicious or awkward","The matter get k-leg.",""],["Listen well-well","Pay close attention","Listen carefully","Make you listen well-well.",""],["Over-try","To overdo something","Trying too hard","You don over-try for this dress.",""],["Kakaki","Trumpet / Loud person","Trumpet or loud announcement","Stop acting like kakaki.",""],["Tiff","To steal / Thief","Steal","They tiff my phone.",""],["Bad-belly","Jealousy","Jealousy/envy","Stop that your bad-belly.",""],["Eye-red","Greed / Passion","Angry or envious","He get eye-red for success.",""],["Japa","To flee / Emigrate","To flee/emigrate abroad","My brother don japa go UK.",""],["Gbosa","A loud bang / Applause","Sound of a gunshot or slap","Give the man one gbosa!",""],["Correct","Excellent","Good/excellent","That food correct well-well.",""],["Shakara","Showing off","Showing off/pride","No do me shakara.",""],["Mawa","To be unlucky","Be careful/watch out","Today just be mawa for me.",""],["Kolo","To go crazy","Mad/crazy","You don kolo?",""],["Loke-loke","Upwards / Progress","Up and down/everywhere","Your life go go loke-loke.",""],["Yawa","Problem / Disaster","Trouble/problem","Yawa don gas!",""],["Fabu","A lie / Tall tale","Lie or exaggeration","No give me that fabu.",""],["Dem-say","Rumors","Rumour/gossip","No listen to dem-say.",""],["Pot-belly","Big stomach","Big stomach","Too much beer give am pot-belly.",""],["Strong-head","Stubborn","Stubborn person","That pikin get strong-head.",""],["Wash-wash","Flattery / Deceit","Fraud/scam","All that talk na wash-wash.",""],["Gbagbe","Forget it","Forget it","Gbagbe that matter.",""],["Under-tree","Local/Informal spot","Informal roadside gathering/school","We go meet for under-tree.",""],["Work-remain","Unfinished work","There’s still more to do","I still get work-remain.",""],["I go show you","I will teach you a lesson","I’ll teach you a lesson","Follow me play, I go show you.",""],["Quench","To die / Turn off","Calm down or satisfy","Light don quench.",""],["Maga","A victim of a scam","Fool/victim of a scam","The maga don pay.",""],["Chop-life","Enjoying life","Enjoy life","Make we chop-life small.",""],["Panda","Fake / Counterfeit","To loiter or hang around","That gold na panda.",""],["Join body","To conspire","Unite or cooperate","They join body do me bad.",""],["Dash","To give a gift","Gift or tip","Dash me that your shoe.",""],["Talk-u-talk-u","Someone who talks too much","Too much talking","No be talk-u-talk-u be the work.",""],["Baffs","Nice clothes","Clothes/fashion","See your new baffs!",""],["Oversabi","A know-it-all","Know-it-all person","No do oversabi for here.",""],["Tally","To match / Agree","Count or calculate","Your talk no tally.",""],["Cut-and-join","Ragged / Improvisation","Patchwork or poorly assembled","This plan na cut-and-join.",""],["Small-boy","Junior / Amateur","Inexperienced or junior person","You still be small-boy for this game.",""],["Leg-over","To trick (Dribble)","Sexual intercourse","He play me leg-over for that deal.",""],["Yellow-fever","Traffic warden","Light-skinned woman","Yellow-fever dey for road.",""],["Bolanle","Socialite / Traveler","A flashy or attractive woman","You be real Bolanle.",""],["Gidigba","Firm / Solid","Firmly/solidly","I stand gidigba for my word.",""],["JJC - Johnny Just Come","Just starting here","","",""],["How you dey?","How are you?","Everyday casual greeting","How you dey na, since?","Greetings & Pleasantries"],["How body?","How are you feeling?","Asking after someone's wellbeing","How body, my brother?","Greetings & Pleasantries"],["Long time","Long time, no see","Greeting after a while apart","Ah, long time! Wetin dey happen?","Greetings & Pleasantries"],["Well done","Greetings to someone working","Said to anyone doing a task","Well done o, Mama.","Greetings & Pleasantries"],["We move","Let's carry on regardless","Popular slang for pressing on","Money no complete, but we move.","Greetings & Pleasantries"],["I dey kampe","I am strong and solid","Doing very well","No worry, I dey kampe.","Greetings & Pleasantries"],["Abi?","Isn't it? / Right?","Tag question seeking agreement","This place fine, abi?","Greetings & Pleasantries"],["Oya","Come on / Let's go","Prompt to start or hurry","Oya, make we start.","Greetings & Pleasantries"],["Ehen","Yes / Go on / I see","Acknowledgement or prompting","Ehen, wetin happen next?","Greetings & Pleasantries"],["Na wa o","Wow / That is something","Exclamation of surprise or dismay","Na wa o, this queue long.","Greetings & Pleasantries"],["Safe journey","Have a safe trip","Farewell to a traveller","Safe journey, text me when you land.","Greetings & Pleasantries"],["Greet the house","Say hello to your family","Parting courtesy","Greet the house for me o.","Greetings & Pleasantries"],["How the family?","How is your family?","Common follow-up question","How the family, dem dey fine?","Greetings & Pleasantries"],["I hail o","I greet you / Respect","Casual salute","Baba, I hail o.","Greetings & Pleasantries"],["Wetin dey happen?","What's going on?","Asking for news or an update","Wetin dey happen for here?","Common Questions"],["You get am?","Do you understand / have it?","Checking comprehension or possession","The change, you get am?","Common Questions"],["How much?","How much is it?","Asking a price","This one, how much?","Common Questions"],["Wetin be this?","What is this?","Asking about an object","Wetin be this for ground?","Common Questions"],["You don chop?","Have you eaten?","A caring question","You don chop this afternoon?","Common Questions"],["You sure?","Are you sure?","Seeking confirmation","You sure say na today?","Common Questions"],["Na who?","Who is it?","Asking identity","Knock dey door — na who?","Common Questions"],["Wetin concern me?","What has it got to do with me?","Disclaiming involvement","Their fight, wetin concern me?","Common Questions"],["How far now?","So what's the progress?","Chasing an update","The money matter, how far now?","Common Questions"],["Which time?","What time?","Asking the time or schedule","Which time the bus dey go?","Common Questions"],["Why now?","Why? / For what reason?","Expressing mild protest","You wan go? Why now?","Common Questions"],["Wetin dey worry you?","What's wrong with you?","A challenge or a concern","Wetin dey worry you self?","Common Questions"],["Kudi","Money (Hausa)","Slang for cash","The kudi no reach.",""],["Owo","Money (Yoruba)","Slang for cash","Owo make the world turn.",""],["Cool money","Easy money","Money earned without stress","That gig na cool money.",""],["Blow","To become successful or famous","Making it big","Since he blow, e no dey call again.",""],["Broke","To be out of money","Having no cash","I broke die this month.",""],["Sapa","Extreme poverty / brokeness","Hardship, spoken of as a person","Sapa catch me this week.",""],["Runs","Side hustle / dodgy dealings","Informal money-making","He dey do runs for town.",""],["Balance","Pay the rest / settle up","Owed remainder","Bros, balance me my money.",""],["Alert","Payment notification","Confirmation that money has landed","I go send alert now now.",""],["Chop money","Housekeeping / food allowance","Money for daily needs","She never give me chop money.",""],["Kobo","A tiny amount of money","The smallest coin","I no get one kobo.",""],["Egunje","A bribe","Illegal payment","Dem collect egunje for gate.",""],["Sponsor","A wealthy backer","Someone who funds your lifestyle","Her sponsor buy the bag.",""],["Account dey breathe","I have a little money","Barely okay financially","No be plenty, but account dey breathe.",""],["Yahoo","Internet fraud","Online scamming","Him dey do yahoo.",""],["Maga don pay","The victim has paid up","A scam has succeeded","He dey shout say maga don pay.",""],["Amala","Yam-flour swallow","A dark Yoruba staple","Amala and ewedu sweet.",""],["Eba","Garri swallow","Common cassava swallow","Make the eba soft small.",""],["Fufu","Cassava swallow","Fermented swallow","Fufu with egusi na correct.",""],["Pepper soup","Spicy meat or fish broth","Hot, peppery soup","Cold night need pepper soup.",""],["Suya","Spiced grilled meat","Street barbecue skewers","Buy suya from that mallam.",""],["Puff-puff","Fried sweet dough balls","A party snack","Small chops no complete without puff-puff.",""],["Akara","Bean cake","Fried bean-batter","Akara and pap for morning.",""],["Zobo","Hibiscus drink","A chilled red drink","Bring cold zobo abeg.",""],["Kunu","Millet drink","A northern grain drink","Kunu dey sweet when e cold.",""],["Garri","Cassava flakes","Soak it or make swallow","Soak garri, add groundnut.",""],["Mama put","Roadside eatery","A cheap local canteen","We chop for mama put.",""],["Buka","Local restaurant","An informal eatery","The buka rice cheap.",""],["Ponmo","Cow skin (as food)","A chewy meat substitute","Ponmo cheap pass beef.",""],["Dodo","Fried plantain","A sweet side dish","Rice and dodo na my best.",""],["Gala","Sausage roll snack","Sold to cars in traffic","Buy gala for the hold-up.",""],["Boli","Roasted plantain","Street-roasted plantain","Boli and groundnut for evening.",""],["Kai kai","Local gin","Strong homemade spirit","That kai kai strong die.",""],["Panla","Dried stockfish","Tough salted fish","Add panla to the stew.",""],["Chop belle full","Eat to your satisfaction","Eat well","Chop belle full, e plenty.",""],["Agege bread","Soft dense white loaf","A slightly sweet bread","Agege bread and ewa agoyin.",""],["Sabi work","To be skilled","Good at the job","That mechanic sabi work.",""],["Sidon look","Sit and watch / do nothing","Staying passive","No sidon look while dem cheat you.",""],["Connect","A useful contact","Someone who can help you","You get connect for that office?",""],["Long throat","Greedy / over-eager","Wanting far too much","Long throat go spoil the deal.",""],["Chop and clean mouth","Take a bribe and deny it","Benefit secretly","He chop and clean mouth.",""],["Sign out","Graduate / finish a programme","Complete school","I sign out from school last year.",""],["Oga at the top","The person in charge","Sometimes one who is clueless","Ask oga at the top.",""],["Grind","Relentless hard work","The daily hustle","Na grind full my week.",""],["Show face","Make a brief appearance","Attend for a short while","Just show face and comot.",""],["Ghost worker","A phantom name on payroll","Paid for a job nobody does","Audit catch plenty ghost worker.",""],["Boss up","Take charge / level up","Grow into success","This year I go boss up.",""],["Waka work","Field work / errands","A job that needs moving around","Na waka work, no be office.",""],["Danfo","Yellow minibus","The Lagos public bus","Enter danfo for the junction.",""],["Keke","Tricycle taxi","A three-wheeler (keke napep)","Take keke to the market.",""],["Okada","Motorbike taxi","A commercial bike","Okada fast for hold-up.",""],["Trek","Walk a long distance","Go far on foot","Fuel finish, we trek home.",""],["Park","Motor park / bus terminal","Where buses load up","Meet me for the park.",""],["Owa o!","I'm getting down here!","Told to the driver or conductor","Owa o, front of the church!",""],["Wole wole","Get in, get in!","A conductor's call to board","Wole wole, one seat remain!",""],["One chance","A robbery-vehicle scam","A dangerous fake taxi","Shine eye for one chance.",""],["Go-slow","Traffic jam","Standstill traffic","Go-slow for third mainland bridge.",""],["Fuel queue","A long line for petrol","A scarcity queue","I spend three hour for fuel queue.",""],["Carry last","Come dead last","Finish behind everyone","No carry last for this race.",""],["Charter","Hire a whole vehicle","Book the cab privately","We go charter taxi go there.",""],["Waka pass","Ignore / walk past","Pretend not to notice","He just waka pass me.",""],["My people","My family / my folks","Kin or a close group","How my people for house?",""],["Compound","A shared housing yard","A multi-family plot","Everybody for compound hear am.",""],["Face me I face you","Tenement housing","Rooms along a shared corridor","We dey face me I face you for Yaba.",""],["Firstborn","The eldest child","The senior child","As firstborn, e dey your neck.",""],["Last born","The youngest child","The baby of the house","Last born dey enjoy.",""],["In-law","A relative by marriage","Your spouse's family","My in-law dey visit weekend.",""],["Wife material","Seen as marriage-ready","Domestic and dependable","Dem talk say she be wife material.",""],["Broda","Brother / young man","Also used for a male stranger","Broda, abeg shift.",""],["Sista","Sister / young woman","Also used for a female stranger","Sista, how much be this?",""],["Aunty","Aunt / any older woman","A respectful term","Greet aunty for me.",""],["Waka come","Come around / visit","Pay someone a visit","Waka come make we yarn.",""],["Village","Ancestral hometown","Where family roots are","We travel go village for Christmas.",""],["Owambe","A big Yoruba party","A lavish weekend celebration","Saturday na owambe.",""],["Aso ebi","Matching party cloth","The group's uniform fabric","Buy the aso ebi before e finish.",""],["Spraying","Sticking money on dancers","Showering cash at a party","Uncle dey spray the couple.",""],["Gbedu","Loud party music / the vibe","Big sound","Turn up the gbedu.",""],["Turn up","Party hard","Celebrate with full energy","We go turn up tonight.",""],["Reception","The party after a wedding","The post-ceremony feast","See you for the reception.",""],["Owambe crasher","A party gatecrasher","An uninvited guest chasing food","Na owambe crasher chop all the rice.",""],["Alaga","A wedding MC (Yoruba)","The ceremony anchor","The alaga dey collect money.",""],["Chop knuckle","Fist bump","A greeting that seals agreement","We chop knuckle on the deal.",""],["Gyrate","Dance and have fun","Enjoy the party","We gyrate till morning.",""],["Detty December","The party-heavy December","Festive-season turn-up","She dey save for detty December.",""],["Toast","To chat someone up","Pursue romantically","He dey toast that girl since.",""],["Catch feelings","Start to like someone","Develop emotions","No catch feelings for this game.",""],["My person","My partner / close one","A term of endearment","You be my person.",""],["Bae","Boyfriend or girlfriend","A loved one","Me and my bae dey go out.",""],["Shoot your shot","Make a romantic move","Try your luck","Shoot your shot before another person do.",""],["Sisi","A pretty young lady","A stylish girl","That sisi sabi dress.",""],["Guy man","A smooth, streetwise young man","A slick fellow","He be guy man, e sabi talk.",""],["Break heart","To be heartbroken","The pain of a break-up","That break-up break my heart.",""],["Follow","To date someone","Be in a relationship with","She dey follow one boy for school.",""],["Sweet mouth","Smooth, flattering talk","Charm used to persuade","Him sweet mouth full everywhere.",""],["Package","Someone's whole appeal","The full deal","Her package complete.",""],["Do like","Flirt / act affectionate","Be playful and sweet","Stop to dey do like for public.",""],["Cruise","Banter / not serious","Playful vibes","Na cruise, no vex.",""],["Vibe","Energy / mood","Someone's aura","I like your vibe.",""],["Mad o","Wow / that's wild","An exclamation","Mad o! You see that goal?",""],["E choke","It's overwhelming, in a good way","Impressive / a lot","The party set — e choke.",""],["No cap","No lie / for real","Being honest","That film good, no cap.",""],["Sha","Anyway / regardless","A filler of resignation","I go try sha.",""],["Gbagaun","A blunder / grammatical slip","A public mistake","He make gbagaun for the speech.",""],["Jasi","To leave abruptly / bolt","Run off quickly","He jasi when police show.",""],["Gum body","Stick close / be clingy","Not leaving someone's side","She gum body since morning.",""],["Yakata","Fall flat / crash down","A heavy fall","He slip, fall yakata.",""],["Kolomental","Crazy / unhinged","An extended form of kolo","This heat be kolomental.",""],["Werey","A mad person; also 'madly'","A rough insult or an intensifier","You be werey? / He funny like werey.",""],["Padi","Friend / mate","A close pal","Him be my padi from school.",""],["Guy","Friend / mate","A casual way to address a man","Guy, wetin dey happen?",""],["Baba","Boss / a respected man","A big man","Baba, I hail o.",""],["Scatter my head","Confuse me / blow my mind","Overwhelm mentally","The news scatter my head.",""],["On point","Exactly right / sharp","Perfect","Her outfit on point.",""],["Off point","Wrong / out of order","Not correct","Your answer off point.",""],["Sabi road","Streetwise","Knows how things really work","That boy sabi road.",""],["No dulling","Don't slack / stay alert","Keep moving","Opportunity dey — no dulling.",""],["Free me","Leave me alone","Back off","Abeg free me this morning.",""],["I no send","I don't care","Dismissive of what others think","Wetin dem talk? I no send.",""],["Kpafuka","To be ruined / finished","Completely wrecked","If police catch am, he don kpafuka.",""],["Drip","A stylish outfit","Great fashion sense","Your drip too much today.",""],["Fly","Well-dressed / cool","Looking sharp","He dey fly for the event.",""],["Slay","To look stunning","Dress impressively","She slay for the wedding.",""],["Ankara","African wax-print fabric","Colourful patterned cloth","This ankara style fine.",""],["Agbada","A flowing wide robe","Grand men's outfit","Chief wear full agbada.",""],["Senator","Men's tailored native wear","A simple two-piece native","I get three senator for wardrobe.",""],["Gele","A woman's head-tie","An elaborate headwrap","Her gele stand well.",""],["Kampala","Tie-dye / adire cloth","Patterned local fabric","I sew kampala for weekend.",""],["Sagging","Wearing trousers low","A street style","No do sagging for church.",""],["Corporate","Smart office wear","Formal dressing","Monday na corporate for work.",""],["Rock am","Wear it well / pull it off","Carry an outfit with confidence","You rock that jacket.",""],["Baller","A skilled player / big spender","Good on the pitch or free with cash","Your guy na baller.",""],["Panna","A nutmeg in football","Playing the ball through the legs","He panna the defender.",""],["Walkover","An easy win / no contest","A one-sided match","That match na walkover.",""],["Ludo","The board game","A popular dice game","We play ludo for the veranda.",""],["Whot","A Nigerian card game","Played with numbered cards","Bring the whot cards.",""],["Suwe","Hopscotch","A children's ground game","Girls dey play suwe for sand.",""],["Ten-ten","A clapping and foot game","A children's playground game","We play ten-ten for break.",""],["Viewing centre","A match hall","A cheap place to watch football","We watch the final for viewing centre.",""],["Table","The league standings","The ranking chart","Which position for table?",""],["Set","Ready / in good form","On top of things","Him game set today.",""],["Sharp guy","A clever, opportunistic person","A quick-witted operator","Him too sharp guy.",""],["Mumu","A fool / gullible person","A simpleton","No be mumu I be.",""],["Olodo","A dullard / weak student","Academically poor","Him be olodo for maths.",""],["Efiko","A brilliant student","Very studious","Efiko dey read for night.",""],["Aje butter","A pampered, soft person","Grew up privileged","This work no be for aje butter.",""],["Area boy","A street tough","A neighbourhood tout","Area boys dey collect toll.",""],["Big man","A wealthy, influential person","A VIP","Big man no dey queue.",""],["Follow-follow","A copycat with no own mind","Does whatever others do","No be follow-follow person I be.",""],["Yeye","Nonsense / worthless","Foolish or useless","Stop that yeye talk.",""],["Rugged","Tough / street-hardened","Can survive anything","That boy rugged, e no dey fear.",""],["Bush","Unrefined / uncivilised","Crude behaviour","Him behaviour too bush.",""],["Sharp mouth","A rude, blunt talker","Says harsh things freely","Her sharp mouth dey cause fight.",""],["Jagaban","A powerful leader","The boss of bosses","Him be jagaban for that area.",""],["Gbadun","To enjoy / be pleased","Take pleasure in","I gbadun that music.",""],["Slack","Careless / not sharp","Dropping the ball","No slack for this matter.",""],["Body no gree","I feel unwell","The body isn't cooperating","I wan work but body no gree.",""],["Malaria","The fever illness","A common mosquito-borne sickness","Malaria dey worry me since Monday.",""],["Catarrh","A cold / runny nose","A blocked, running nose","This harmattan bring catarrh.",""],["Belle run","Diarrhoea","An upset stomach","That food give me belle run.",""],["Chemist","A pharmacy","Where you buy medicine","Buy paracetamol for chemist.",""],["Agbo","Herbal medicine","A traditional bitter brew","Mama boil agbo for the fever.",""],["Sick well well","Seriously ill","Quite unwell","He sick well well, dem carry am hospital.",""],["Blood dey hot","Feverish or agitated","Running a temperature, or angry","Pikin blood dey hot, e get fever.",""],["Waist dey pain me","My lower back hurts","Back pain","After the load, waist dey pain me.",""],["Recover small","Feeling a bit better","A partial recovery","I recover small since morning.",""],["Sun catch me","I got heatstroke or sunburn","Overexposed to the sun","Sun catch me for the field.",""],["Harmattan","The dry, dusty season","The cold, hazy Dec-Feb period","Harmattan crack my lips.",""],["Rainy season","The wet months","The heavy-rain period","Rainy season don start.",""],["Hot dey hot","It's very hot","Intense heat","Today the hot dey hot.",""],["Rain wan fall","It's about to rain","Rain is coming","Carry umbrella, rain wan fall.",""],["Breeze dey blow","It's windy; also, a rumour is spreading","Wind, or gossip","Serious breeze dey blow about the sack.",""],["Flood","Rainwater flooding the streets","Streets under water","Flood carry the gutter cover.",""],["Cold dey catch me","I'm feeling cold","Feeling chilly","Wear cloth, cold dey catch me.",""],["Dust","Harmattan haze","Airborne dry-season dust","Dust cover the whole car.",""],["Now now","Right now / immediately","Very soon","I dey come now now.",""],["Just now","A moment ago","Very recently","He comot just now.",""],["Later later","Much later / eventually","After some time","We go talk later later.",""],["Tay tay","For a very long time","Ages","I never see am tay tay.",""],["Every time","Always / constantly","All the time","You dey complain every time.",""],["That time","Back then","In the past","That time, fuel cheap.",""],["African time","Habitual lateness","Running behind schedule","The event start late — African time.",""],["Broke January","The lean month after Christmas","Post-festive brokeness","Broke January hit hard.",""],["Salah","The Muslim festival","Eid celebration","We share ram for Salah.",""],["As e dey hot","Right now / while it's fresh","Immediately","Buy am as e dey hot.",""],["MB","Phone data","Your data bundle","My MB don finish.",""],["Flash me","Ring once, then I call back","A missed-call signal","Flash me when you land.",""],["Recharge card","An airtime top-up voucher","A prepaid credit card","Buy 500 recharge card.",""],["Network","Phone signal","Reception or connectivity","Network bad for this area.",""],["Load airtime","Top up phone credit","Add call units","Make I load airtime first.",""],["Post am","Put it on social media","Share it online","You go post am for status?",""],["Dey trend","To trend online","Be widely talked about","The video dey trend for X.",""],["Yahoo boy","An internet fraudster","Someone who scams online","Dem arrest one yahoo boy for hotel.",""],["Vawulence","Online aggression / drama","Deliberate provocation","Twitter full of vawulence today.",""],["Light don go","The power has gone off","A power outage","We dey darkness, light don go.",""],["Gen","A home generator","Backup power machine","Put on gen, the match dey start.",""],["I better pass my neighbour","A tiny cheap generator","A small, noisy generator","The I better pass my neighbour dey disturb.",""],["Charge phone","Charge the phone while there's power","A battery top-up","Light come, charge phone quick.",""],["God dey","God is there / have faith","Reassurance in hardship","No cry, God dey.",""],["E go better","Things will improve","Hopeful encouragement","Hard now, but e go better.",""],["No be lie","That's true","Agreement","Fuel cost — no be lie.",""],["Na lie!","That's not true! / No way!","Disbelief","Him win? Na lie!",""],["See finish","Familiarity that breeds disrespect","Being taken for granted","Na see finish make dem yab am.",""],["Nothing spoil","It's all good / no harm done","Reassurance","You apologise — nothing spoil.",""],["Na so e be","That's just how it is","Resignation","We no get light again — na so e be.",""],["E remain small","Almost there","Nearly done, or nearly happened","I nearly fall — e remain small.",""],["Carry your cross","Bear your own burden","Take responsibility","Na you cause am, carry your cross.",""],["God when","I wish that were me too","Longing on seeing others' luck","Dem buy am car — God when?",""],["To be sincere","Honestly / to be honest","Prefacing candour","To be sincere, the plan no strong.",""],["Case no be case","It's a serious matter","Real trouble","If oga hear, case no be case.",""],["E pain me","It hurt or annoyed me","Felt aggrieved","The way he talk, e pain me.",""],["E don red","Things have got critical","The situation has escalated","Salary no come — e don red.",""],["Hold your brain","Brace yourself / stay calm","Prepare mentally","Before I tell you, hold your brain.",""],["As you see me so","Believe it or not","Emphasising a truth about oneself","As you see me so, I never chop since morning.",""],["Wetin man go do","What can one do?","Helpless resignation","Prices high, but wetin man go do.",""],["E sweet me","It pleased me / I enjoyed it","Felt good","The way you talk am, e sweet me.",""],["Do quick","Hurry up","Be fast","Do quick, we dey late.",""],["Na condition","Circumstances forced it","Done out of necessity","I no like the job — na condition.",""],["No dey carry last","Don't be left behind","Keep up with others","For gist, she no dey carry last.",""]];
+
+const WORDS=[
+  ["CHOP","to eat"],
+  ["SABI","to know / know-how"],
+  ["PIKIN","a child"],
+  ["WAHALA","trouble"],
+  ["GBEGE","big trouble"],
+  ["YAWA","trouble / disaster"],
+  ["TAYA","to be tired"],
+  ["PARA","to flare up in anger"],
+  ["MENT","acting crazy"],
+  ["LAMBA","lies / tall tales"],
+  ["GINGER","motivation / energy"],
+  ["AGBERO","a motor-park tout"],
+  ["SHAYO","alcohol / booze"],
+  ["AKATA","abroad / overseas"],
+  ["YABB","to tease or insult"],
+  ["COMOT","to leave / go away"],
+  ["OJORO","cheating"],
+  ["OKRIKA","second-hand clothes"],
+  ["YARN","to talk / to chat"],
+  ["FIAM","very fast, in a flash"],
+  ["PALLY","a close friend"],
+  ["KAKAKI","a loud, noisy person"],
+  ["TIFF","to steal; a thief"],
+  ["JAPA","to flee the country"],
+  ["GBOSA","a loud bang / applause"],
+  ["SHAKARA","showing off"],
+  ["KOLO","to go crazy"],
+  ["FABU","a lie / a tall tale"],
+  ["GBAGBE","forget it"],
+  ["QUENCH","to die / to switch off"],
+  ["MAGA","a scam victim"],
+  ["DASH","to give as a gift"],
+  ["BAFFS","nice clothes"],
+  ["GIDIGBA","firm and solid"],
+  ["HAMMER","to hit it big / get rich"],
+  ["HUSTLE","hard graft / the grind"],
+  ["MANAGE","to make do / endure"],
+  ["JOLLOF","the rice dish; great vibes"],
+  ["BELLE","stomach; pregnancy"],
+  ["MADAM","wife / female boss"],
+  ["AWOOF","a freebie"],
+  ["MAGUN","bad luck / a taboo"],
+  ["DOINGS","a display of wealth"],
+  ["WAYRAY","someone acting crazy"],
+  ["MAWA","to be unlucky"],
+  ["SETTLE","to bribe / pay off"],
+  ["WAKA","to walk / to go"],
+  ["OKADA","a motorbike taxi"],
+  ["DANFO","a yellow minibus"],
+  ["SUYA","spiced grilled meat"],
+  ["AKARA","fried bean cake"],
+  ["AMALA","yam-flour swallow"],
+  ["ZOBO","hibiscus drink"],
+  ["KUNU","millet drink"],
+  ["GARRI","cassava flakes"],
+  ["PONMO","cow skin, as food"],
+  ["PANLA","dried stockfish"],
+  ["BUKA","a local eatery"],
+  ["MUMU","a fool"],
+  ["OLODO","a dullard / weak student"],
+  ["EFIKO","a brilliant student"],
+  ["YEYE","nonsense / useless"],
+  ["PADI","a friend / mate"],
+  ["CRUISE","banter, not serious"],
+  ["GBADUN","to enjoy"],
+  ["WEREY","a mad person"],
+  ["YAKATA","to fall flat"],
+  ["SAPA","extreme brokeness"],
+  ["KUDI","money"],
+  ["BLOW","to become successful"],
+  ["BROKE","to have no money"],
+  ["ALERT","a payment notification"],
+  ["KOBO","a tiny amount of money"],
+  ["EGUNJE","a bribe"],
+  ["GELE","a woman's head-tie"],
+  ["GBEDU","loud party music"],
+  ["AGBADA","a flowing wide robe"],
+  ["ANKARA","African print fabric"],
+  ["BALLER","a skilled player / big spender"],
+  ["PANNA","a nutmeg in football"],
+  ["LUDO","the board game"],
+  ["TREK","to walk a long way"],
+  ["SISI","a pretty young lady"],
+  ["CRAZE","madness"],
+  ["BABA","boss / a respected man"],
+  ["RUGGED","tough / street-hardened"],
+  ["TOAST","to chat someone up"],
+  ["DODO","fried plantain"],
+  ["BOLI","roasted plantain"],
+  ["EHEN","yes / go on"],
+  ["KEKE","a tricycle taxi"],
+  ["KAMPE","strong and solid"],
+];
+
+/* lookup: uppercase pidgin word -> card row (for richer game result) */
+const CARD_BY_WORD={};
+CARDS.forEach(c=>{ CARD_BY_WORD[c[0].toUpperCase()]=c; });
+
+const store={
+  get(k,d){ try{const v=localStorage.getItem("sabi."+k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{localStorage.setItem("sabi."+k,JSON.stringify(v));}catch(e){} }
+};
+
+/* ---------------- routing ---------------- */
+const screens=["home","game","cards"];
+function show(name){
+  screens.forEach(s=>{ document.getElementById(s).hidden = (s!==name); });
+  if(name==="game" && !game.active) newGame();
+  if(name==="cards"){ computeList(); renderCard(); }
+  window.scrollTo(0,0);
+}
+function goto(name){ location.hash = name==="home" ? "" : name; }
+function fromHash(){
+  const h=location.hash.replace("#","");
+  show(screens.includes(h)?h:"home");
+}
+window.addEventListener("hashchange",fromHash);
+document.querySelectorAll("[data-goto]").forEach(b=>{
+  b.addEventListener("click",()=>goto(b.dataset.goto));
+});
+
+/* ---------------- home ---------------- */
+document.getElementById("card-count").textContent=CARDS.length;
+function renderHomeFoot(){
+  const best=store.get("best",0);
+  const learn=(store.get("learning",[])||[]).length;
+  document.getElementById("home-foot").innerHTML=
+    `<b>${best}</b> best streak &nbsp;·&nbsp; <b>${learn}</b> word${learn===1?"":"s"} to review &nbsp;·&nbsp; <b>${CARDS.length}</b> phrases`;
+}
+
+/* ---------------- word game ---------------- */
+const KEYS=["QWERTYUIOP","ASDFGHJKL","ENTER ZXCVBNM ⌫"];
+const game={active:false,answer:"",hint:"",row:0,col:0,over:false,keyState:{}};
+const gridEl=document.getElementById("grid");
+const kbEl=document.getElementById("keyboard");
+const msgEl=document.getElementById("msg");
+const resultEl=document.getElementById("result");
+
+function buildKeyboard(){
+  kbEl.innerHTML="";
+  KEYS.forEach(rowStr=>{
+    const row=document.createElement("div"); row.className="krow";
+    rowStr.split(" ").forEach(token=>{
+      const labels = (token==="ENTER"||token==="⌫") ? [token] : token.split("");
+      labels.forEach(ch=>{
+        const k=document.createElement("button");
+        k.className="k"+((ch==="ENTER"||ch==="⌫")?" wide":"");
+        k.textContent=ch;
+        k.dataset.key=ch;
+        k.setAttribute("aria-label", ch==="⌫"?"Backspace":ch);
+        k.addEventListener("click",()=>handleKey(ch));
+        row.appendChild(k);
+      });
+    });
+    kbEl.appendChild(row);
+  });
+}
+function paintKeyboard(){
+  kbEl.querySelectorAll(".k").forEach(k=>{
+    const s=game.keyState[k.dataset.key];
+    if(s) k.dataset.state=s; else k.removeAttribute("data-state");
+  });
+}
+
+function newGame(){
+  const pick=WORDS[Math.floor(Math.random()*WORDS.length)];
+  game.answer=pick[0].toUpperCase();
+  game.hint=pick[1];
+  game.row=0; game.col=0; game.over=false; game.active=true; game.keyState={};
+  const len=game.answer.length;
+  gridEl.style.setProperty("--len",len);
+  gridEl.innerHTML="";
+  for(let r=0;r<6;r++){
+    for(let c=0;c<len;c++){
+      const t=document.createElement("div");
+      t.className="tile"; t.setAttribute("role","gridcell");
+      t.dataset.r=r; t.dataset.c=c;
+      gridEl.appendChild(t);
+    }
+  }
+  msgEl.textContent="";
+  resultEl.hidden=true;
+  kbEl.hidden=false;
+  const ht=document.getElementById("hint-text");
+  ht.hidden=true; ht.innerHTML=`<b>Meaning:</b> ${game.hint}`;
+  document.getElementById("hint-btn").textContent="Show hint";
+  paintKeyboard();
+  renderStreak();
+}
+function renderStreak(){
+  const s=store.get("streak",0), b=store.get("best",0);
+  document.getElementById("streak-stat").innerHTML=`<b>${s}</b> streak · best <b>${b}</b>`;
+}
+function tileAt(r,c){ return gridEl.querySelector(`.tile[data-r="${r}"][data-c="${c}"]`); }
+
+function handleKey(raw){
+  if(game.over) return;
+  const key=raw.toUpperCase();
+  const len=game.answer.length;
+  if(key==="ENTER"){ submitGuess(); return; }
+  if(key==="⌫"||key==="BACKSPACE"){
+    if(game.col>0){
+      game.col--;
+      const t=tileAt(game.row,game.col); t.textContent=""; t.classList.remove("filled");
+    }
+    msgEl.textContent=""; return;
+  }
+  if(/^[A-Z]$/.test(key) && game.col<len){
+    const t=tileAt(game.row,game.col);
+    t.textContent=key; t.classList.add("filled");
+    game.col++;
+  }
+}
+function score(guess,answer){
+  const res=Array(answer.length).fill("absent");
+  const count={};
+  for(const ch of answer) count[ch]=(count[ch]||0)+1;
+  for(let i=0;i<answer.length;i++){ if(guess[i]===answer[i]){res[i]="correct"; count[guess[i]]--;} }
+  for(let i=0;i<answer.length;i++){
+    if(res[i]==="correct") continue;
+    if(count[guess[i]]>0){ res[i]="present"; count[guess[i]]--; }
+  }
+  return res;
+}
+function submitGuess(){
+  const len=game.answer.length;
+  if(game.col<len){
+    msgEl.textContent="Not enough letters";
+    gridEl.classList.remove("bad"); void gridEl.offsetWidth; gridEl.classList.add("bad");
+    return;
+  }
+  let guess="";
+  for(let c=0;c<len;c++) guess+=tileAt(game.row,c).textContent;
+  const marks=score(guess,game.answer);
+  for(let c=0;c<len;c++){
+    const t=tileAt(game.row,c);
+    setTimeout(()=>{
+      t.classList.add("reveal",marks[c]);
+      const prev=game.keyState[guess[c]];
+      const rank={absent:0,present:1,correct:2};
+      if(prev===undefined || rank[marks[c]]>rank[prev]) game.keyState[guess[c]]=marks[c];
+      paintKeyboard();
+    }, c*180);
+  }
+  const won=guess===game.answer;
+  const lastRow=game.row===5;
+  setTimeout(()=>{
+    if(won){ finish(true); }
+    else if(lastRow){ finish(false); }
+    else { game.row++; game.col=0; }
+  }, len*180+320);
+}
+function finish(won){
+  game.over=true; game.active=false;
+  let s=store.get("streak",0), b=store.get("best",0);
+  if(won){ s+=1; if(s>b){ b=s; store.set("best",b); } }
+  else { s=0; }
+  store.set("streak",s);
+  renderStreak(); renderHomeFoot();
+
+  const card=CARD_BY_WORD[game.answer];
+  resultEl.classList.toggle("lose",!won);
+  document.getElementById("result-eyebrow").textContent = won ? "You sabi! 🎉" : "The word be —";
+  document.getElementById("result-word").textContent=game.answer;
+  document.getElementById("result-trans").textContent = card ? card[1] : game.hint;
+  const exEl=document.getElementById("result-ex");
+  if(card && card[3]){
+    exEl.hidden=false;
+    exEl.innerHTML=`<i>${card[3]}</i>${card[2]||card[1]}`;
+  } else { exEl.hidden=true; }
+  resultEl.hidden=false;
+  kbEl.hidden=true;
+  msgEl.textContent="";
+  document.getElementById("again-btn").focus();
+}
+document.getElementById("hint-btn").addEventListener("click",()=>{
+  const ht=document.getElementById("hint-text");
+  ht.hidden=!ht.hidden;
+  document.getElementById("hint-btn").textContent=ht.hidden?"Show hint":"Hide hint";
+});
+document.getElementById("again-btn").addEventListener("click",newGame);
+
+window.addEventListener("keydown",e=>{
+  if(document.getElementById("game").hidden) return;
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.key==="Enter"){ e.preventDefault(); handleKey("ENTER"); }
+  else if(e.key==="Backspace"){ handleKey("⌫"); }
+  else if(/^[a-zA-Z]$/.test(e.key)){ handleKey(e.key); }
+});
+buildKeyboard();
+
+/* ---------------- flashcards ---------------- */
+const FILTERS=[
+  {id:"all",label:"All"},
+  {id:"greet",label:"Greetings"},
+  {id:"quest",label:"Questions"},
+  {id:"untag",label:"Everyday"},
+  {id:"learn",label:"★ Review"}
+];
+const cardState={filter:"all", idx:0, list:[], flipped:false};
+
+function computeList(){
+  const learn=new Set(store.get("learning",[]));
+  let list=CARDS.map((c,i)=>({c,i}));
+  switch(cardState.filter){
+    case "greet": list=list.filter(x=>x.c[4]==="Greetings & Pleasantries"); break;
+    case "quest": list=list.filter(x=>x.c[4]==="Common Questions"); break;
+    case "untag": list=list.filter(x=>!x.c[4]); break;
+    case "learn": list=list.filter(x=>learn.has(x.c[0])); break;
+  }
+  cardState.list=list;
+  if(cardState.idx>=list.length) cardState.idx=0;
+}
+function buildFilters(){
+  const wrap=document.getElementById("filters");
+  wrap.innerHTML="";
+  const learn=(store.get("learning",[])||[]).length;
+  FILTERS.forEach(f=>{
+    const b=document.createElement("button");
+    b.textContent = f.id==="learn" ? `★ Review (${learn})` : f.label;
+    b.setAttribute("aria-pressed", String(cardState.filter===f.id));
+    b.addEventListener("click",()=>{
+      cardState.filter=f.id; cardState.idx=0; cardState.flipped=false;
+      computeList(); buildFilters(); renderCard();
+    });
+    wrap.appendChild(b);
+  });
+}
+function renderCard(){
+  const area=document.getElementById("card-area");
+  const empty=document.getElementById("cards-empty");
+  if(cardState.list.length===0){
+    area.hidden=true; empty.hidden=false;
+    document.getElementById("card-progress-top").textContent="0 / 0";
+    return;
+  }
+  area.hidden=false; empty.hidden=true;
+  if(cardState.idx>=cardState.list.length) cardState.idx=0;
+
+  const {c}=cardState.list[cardState.idx];
+  cardState.flipped=false;
+
+  document.getElementById("c-word").textContent=c[0];
+  document.getElementById("c-example").textContent=c[3]||"";
+  document.getElementById("c-trans").textContent=c[1];
+  const showMeaning = c[2] && c[2].toLowerCase()!==c[1].toLowerCase();
+  document.getElementById("c-meaning").textContent=showMeaning ? c[2] : "";
+  document.getElementById("c-topic").textContent=c[4]||"";
+  paintFace();
+
+  const learn=new Set(store.get("learning",[]));
+  document.getElementById("know-btn").classList.remove("on");
+  document.getElementById("still-btn").classList.toggle("on", learn.has(c[0]));
+
+  document.getElementById("card-progress").textContent=`${cardState.idx+1} / ${cardState.list.length}`;
+  document.getElementById("card-progress-top").innerHTML=`<b>${cardState.idx+1}</b> / ${cardState.list.length}`;
+}
+function paintFace(){
+  const back=cardState.flipped;
+  document.getElementById("c-side").textContent = back ? "Meaning" : "Pidgin";
+  document.getElementById("c-word").hidden = back;
+  const exEl=document.getElementById("c-example");
+  exEl.hidden = back || !exEl.textContent;
+  document.getElementById("c-trans").hidden = !back;
+  const meEl=document.getElementById("c-meaning");
+  meEl.hidden = !back || !meEl.textContent;
+  document.getElementById("card").classList.toggle("is-back", back);
+}
+function flipCard(){
+  const card=document.getElementById("card");
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    cardState.flipped=!cardState.flipped; paintFace(); return;
+  }
+  card.classList.add("flipping");
+  setTimeout(()=>{
+    cardState.flipped=!cardState.flipped;
+    paintFace();
+    card.classList.remove("flipping");
+  },160);
+}
+function move(step){
+  const n=cardState.list.length;
+  if(!n) return;
+  cardState.idx=(cardState.idx+step+n)%n;
+  renderCard();
+}
+document.getElementById("card").addEventListener("click",flipCard);
+document.getElementById("card").addEventListener("keydown",e=>{
+  if(e.key===" "||e.key==="Enter"){ e.preventDefault(); flipCard(); }
+});
+document.getElementById("prev-btn").addEventListener("click",()=>move(-1));
+document.getElementById("next-btn").addEventListener("click",()=>move(1));
+document.getElementById("shuffle-btn").addEventListener("click",()=>{
+  for(let i=cardState.list.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [cardState.list[i],cardState.list[j]]=[cardState.list[j],cardState.list[i]];
+  }
+  cardState.idx=0; renderCard();
+});
+function markLearning(add){
+  const {c}=cardState.list[cardState.idx];
+  const learn=new Set(store.get("learning",[]));
+  add ? learn.add(c[0]) : learn.delete(c[0]);
+  store.set("learning",[...learn]);
+  buildFilters(); renderHomeFoot();
+  if(cardState.filter==="learn"){
+    computeList();
+    if(cardState.idx>=cardState.list.length) cardState.idx=0;
+    renderCard();
+  } else {
+    move(1);
+  }
+}
+document.getElementById("know-btn").addEventListener("click",()=>markLearning(false));
+document.getElementById("still-btn").addEventListener("click",()=>markLearning(true));
+window.addEventListener("keydown",e=>{
+  if(document.getElementById("cards").hidden) return;
+  if(e.key==="ArrowLeft") move(-1);
+  else if(e.key==="ArrowRight") move(1);
+});
+
+/* ---------------- init ---------------- */
+buildFilters();
+renderHomeFoot();
+fromHash();
+</script>
