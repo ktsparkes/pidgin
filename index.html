@@ -19,6 +19,7 @@
     --yellow:#FFC400; --yellow-ink:#1A1500;
     --absent:#A79E80; --absent-ink:#FFFFFF;
     --pop:#FF3B1F;
+    --blue:#2A63E5; --blue-ink:#FFFFFF;
     --key:#FFE9A8; --key-ink:#141200;
     --focus:#00A651;
     --shadow:0 2px 0 rgba(20,18,0,.07), 0 18px 40px -16px rgba(20,18,0,.34);
@@ -32,6 +33,7 @@
       --yellow:#FFD23D; --yellow-ink:#141200;
       --absent:#47513E; --absent-ink:#F6F1DD;
       --pop:#FF6A47;
+      --blue:#5B9CFF; --blue-ink:#06152E;
       --key:#243726; --key-ink:#F6F1DD;
       --focus:#22DE77;
       --shadow:0 2px 0 rgba(0,0,0,.35), 0 18px 40px -16px rgba(0,0,0,.66);
@@ -45,6 +47,7 @@
     --yellow:#FFD23D; --yellow-ink:#141200;
     --absent:#47513E; --absent-ink:#F6F1DD;
     --pop:#FF6A47;
+    --blue:#5B9CFF; --blue-ink:#06152E;
     --key:#243726; --key-ink:#F6F1DD;
     --focus:#22DE77;
     --shadow:0 2px 0 rgba(0,0,0,.35), 0 18px 40px -16px rgba(0,0,0,.66);
@@ -113,6 +116,7 @@
   .mode[data-goto="fill"] .go{background:var(--yellow); color:var(--yellow-ink)}
   .mode[data-goto="cards"] .go{background:var(--pop); color:#fff}
   .mode[data-goto="ministry"] .go{background:var(--ink); color:var(--bg)}
+  .mode[data-goto="convo"] .go{background:var(--blue); color:var(--blue-ink)}
   .chip-tiles{display:flex; gap:5px; margin-top:12px}
   .chip-tiles span{
     width:26px; height:26px; border-radius:6px; display:grid; place-items:center;
@@ -421,6 +425,61 @@
   }
   .lock .btn{margin-top:2px}
 
+  /* ---------- PRACTICE A CONVERSATION ---------- */
+  .convo-lead{font-size:.95rem; color:var(--ink-dim); margin:14px 0 4px}
+  .persona-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 6px}
+  .persona-card{
+    text-align:left; border:2px solid var(--line); border-radius:16px; background:var(--surface);
+    padding:14px; display:flex; flex-direction:column; gap:4px; transition:border-color .12s ease, background .12s ease;
+  }
+  .persona-card b{font-family:"Bricolage Grotesque",sans-serif; font-size:1rem; font-weight:700}
+  .persona-card span{font-size:.8rem; color:var(--ink-dim); line-height:1.35}
+  .persona-card[aria-pressed="true"]{border-color:var(--blue); background:var(--surface-2)}
+  .diff-row{margin:18px 0 6px}
+  .diff-row input[type=range]{width:100%; margin:10px 0 6px; accent-color:var(--blue)}
+  .diff-labels{
+    display:flex; justify-content:space-between; font-family:"Space Mono",monospace;
+    font-size:.68rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.03em;
+  }
+  .convo-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px}
+  .convo-sub{font-size:.86rem; color:var(--ink-dim); margin-top:2px; max-width:36ch}
+  .meter-row{margin-bottom:16px}
+  .meter{height:10px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line)}
+  .meter-fill{height:100%; border-radius:999px; width:50%; background:var(--green); transition:width .3s ease, background .3s ease}
+  .meter-label{
+    font-family:"Space Mono",monospace; font-size:.72rem; text-transform:uppercase;
+    letter-spacing:.05em; color:var(--ink-dim); margin-top:7px; text-align:center;
+  }
+  .chat{
+    display:flex; flex-direction:column; gap:10px; max-height:420px; overflow-y:auto;
+    padding:6px 2px 10px; margin-bottom:6px;
+  }
+  .bubble{
+    max-width:82%; padding:11px 14px; border-radius:16px; font-size:.98rem;
+    line-height:1.42; white-space:pre-wrap; word-break:break-word;
+  }
+  .bubble.them{align-self:flex-start; background:var(--surface-2); color:var(--ink); border-bottom-left-radius:4px}
+  .bubble.me{align-self:flex-end; background:var(--green); color:var(--green-ink); border-bottom-right-radius:4px}
+  .pending-q{
+    border:2px solid var(--blue); border-radius:16px; background:var(--surface);
+    padding:14px 16px; margin-bottom:14px;
+  }
+  .pending-q p{
+    margin:6px 0 8px; font-family:"Bricolage Grotesque",sans-serif; font-weight:600;
+    font-size:1.04rem; line-height:1.35;
+  }
+  .move-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0 14px}
+  .move-row button{
+    border:2px solid var(--ink); border-radius:12px; background:var(--surface); color:var(--ink);
+    padding:11px 8px; font-family:"Bricolage Grotesque",sans-serif; font-weight:600;
+    font-size:.86rem; line-height:1.2; text-align:center;
+    transition:transform .08s ease, background .12s ease;
+  }
+  .move-row button:active{transform:translateY(2px); background:var(--surface-2)}
+  .move-row button:nth-child(5){grid-column:1 / -1}
+  #convo-end-btn{width:100%; margin-top:4px}
+  .outcome-banner .btn{margin-top:14px}
+
   /* ---------- touch devices: don't let hover styles stick after a tap ---------- */
   @media (hover:none){
     .mode:hover{transform:none; box-shadow:var(--shadow-sm); border-color:var(--line)}
@@ -446,6 +505,8 @@
     .mode h2{font-size:1.35rem}
     .card{min-height:300px; padding:32px 20px 40px}
     .min-card{padding:20px 18px}
+    .persona-grid{grid-template-columns:1fr}
+    .bubble{max-width:90%}
   }
 
   /* ---------- landscape phone: keep it usable without huge vertical gaps ---------- */
@@ -477,7 +538,7 @@
     <div class="home-head">
       <div class="eyebrow">Naija Pidgin &nbsp;·&nbsp; learn small-small</div>
       <h1 class="wordmark"><span class="sabi">Sabi</span> Pidgin</h1>
-      <p>Four ways to grow your Naija Pidgin — guess the hidden word, fill the missing word, flip through everyday phrases, or practice real conversations.</p>
+      <p>Five ways to grow your Naija Pidgin — guess the hidden word, fill the missing word, flip through everyday phrases, practice real questions, or hold a full conversation.</p>
     </div>
 
     <div class="modes">
@@ -512,6 +573,14 @@
         <div>
           <h2>Ministry Practice</h2>
           <p>Real Bible questions people dey ask — you write the Pidgin reply, no answer given here. Check am with your own AI after, if you like.</p>
+        </div>
+        <span class="go" aria-hidden="true">→</span>
+      </button>
+
+      <button class="mode" data-goto="convo">
+        <div>
+          <h2>Practice a Conversation</h2>
+          <p>Pick who you dey talk to — busy person, angry person, skeptic, and others — set how hard e go be, then keep the gist flowing.</p>
         </div>
         <span class="go" aria-hidden="true">→</span>
       </button>
@@ -660,6 +729,85 @@
     </div>
   </section>
 
+  <!-- ============ PRACTICE A CONVERSATION ============ -->
+  <section class="screen" id="convo" hidden>
+    <div class="bar">
+      <button class="back" data-goto="home" aria-label="Back to menu">‹</button>
+      <h2>Practice a Conversation</h2>
+      <div class="stat" id="convo-stat"></div>
+    </div>
+
+    <!-- setup -->
+    <div id="convo-setup">
+      <p class="convo-lead">Who you wan practice with?</p>
+      <div class="persona-grid" id="persona-grid"></div>
+
+      <div class="diff-row">
+        <label class="min-label" for="diff-slider">How hard e go be — <b id="diff-value">50%</b></label>
+        <input type="range" id="diff-slider" min="1" max="100" value="50">
+        <div class="diff-labels"><span>Soft</span><span>Normal</span><span>Hard well well</span></div>
+      </div>
+
+      <button class="btn" id="convo-start-btn">Start conversation</button>
+    </div>
+
+    <!-- live conversation -->
+    <div id="convo-live" hidden>
+      <div class="convo-head">
+        <div>
+          <div class="eyebrow" id="convo-persona-name">Persona</div>
+          <div class="convo-sub" id="convo-persona-blurb"></div>
+        </div>
+        <button class="clear" id="convo-restart-btn">New person</button>
+      </div>
+
+      <div class="meter-row">
+        <div class="meter"><div class="meter-fill" id="engagement-fill"></div></div>
+        <div class="meter-label" id="engagement-label">How open dem be: 50%</div>
+      </div>
+
+      <div class="chat" id="chat-log"></div>
+
+      <div class="pending-q" id="pending-q" hidden>
+        <div class="eyebrow">Dem ask</div>
+        <p id="pending-q-text"></p>
+        <a class="min-source" id="pending-q-source" href="#" target="_blank" rel="noopener">Full answer dey for jw.org ↗</a>
+      </div>
+
+      <div class="outcome-banner result" id="outcome-banner" hidden>
+        <div class="eyebrow" id="outcome-title">Outcome</div>
+        <p class="trans" id="outcome-text"></p>
+        <button class="btn" id="convo-new-btn">Start new conversation</button>
+      </div>
+
+      <div id="convo-turn">
+        <label class="min-label" for="convo-answer">Wetin you go talk (write your Pidgin reply)</label>
+        <textarea class="min-answer" id="convo-answer" rows="3" placeholder="Type wetin you go really talk…"></textarea>
+
+        <p class="convo-lead">Pick how you go take-am:</p>
+        <div class="move-row" id="move-row"></div>
+
+        <button class="clear" id="convo-end-btn">End the gist here</button>
+      </div>
+
+      <div class="ai-check">
+        <h3>Make your own AI check your Pidgin</h3>
+        <p>This one go copy everything wey you talk for this conversation, put am inside one message wey don ready. This app no dey send anything anywhere — na you go paste am for whichever AI you like use.</p>
+        <button class="btn" id="convo-ai-copy-btn">Copy conversation to check my Pidgin</button>
+        <div class="copy-msg" id="convo-copy-msg"></div>
+        <div class="ai-links">
+          <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude ↗</a>
+          <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT ↗</a>
+          <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini ↗</a>
+        </div>
+        <details class="ai-preview" id="convo-ai-preview-details">
+          <summary>See the message</summary>
+          <pre id="convo-ai-prompt-preview"></pre>
+        </details>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <script>
@@ -801,13 +949,14 @@ window.addEventListener("keydown",e=>{
 },true);
 
 /* ---------------- routing ---------------- */
-const screens=["home","game","cards","fill","ministry"];
+const screens=["home","game","cards","fill","ministry","convo"];
 function show(name){
   screens.forEach(s=>{ document.getElementById(s).hidden = (s!==name); });
   if(name==="game" && !game.active) newGame();
   if(name==="cards"){ computeList(); renderCard(); }
   if(name==="fill" && !fill.active) newFill();
   if(name==="ministry"){ minComputeList(); minRender(); }
+  if(name==="convo"){ convoShowSetup(); }
   window.scrollTo(0,0);
 }
 function goto(name){ location.hash = name==="home" ? "" : name; }
@@ -1344,6 +1493,257 @@ window.addEventListener("keydown",e=>{
   if(document.activeElement && document.activeElement.id==="min-answer") return;
   if(e.key==="ArrowLeft") minMove(-1);
   else if(e.key==="ArrowRight") minMove(1);
+});
+
+/* ---------------- practice a conversation ---------------- */
+/* Still no AI: each persona is a fixed set of authored traits, and every turn is
+   resolved by simple rules — a chosen move has a fixed effect on an "engagement"
+   meter, plus a per-turn decay driven by the difficulty slider. When the persona is
+   engaged enough, it raises a real question drawn from the same MINISTRY bank used
+   in Ministry Practice, tagged to that persona's usual topics. */
+const MOVES=[
+  {id:"smalltalk", label:"Small talk"},
+  {id:"askabout",  label:"Ask about them"},
+  {id:"share",     label:"Share a Bible thought"},
+  {id:"answer",    label:"Answer their question"},
+  {id:"acknowledge", label:"Acknowledge & ease off"}
+];
+const PERSONAS=[
+  {id:"busy", label:"Busy Person", blurb:"In a hurry, checking the time — easily lost if you ramble.",
+    weights:{smalltalk:1, askabout:-1, share:-2, answer:1, acknowledge:2},
+    topics:["God","Bible"],
+    open:"Abeg make e quick, I dey rush reach work.",
+    deflect:["Abeg make e quick, I no get time.","I really need to go now o.","Wetin be the summary sef?","Make we cut the long story short."],
+    goodEnd:"Okay — since you no waste my time, drop the small info, I go check am when I free.",
+    leftEnd:["I really need to go now, abeg excuse me.","Sorry o, I dey run late — nice talking sha."]},
+  {id:"angry", label:"Angry / Defensive", blurb:"Testy and easily offended — snaps back fast.",
+    weights:{smalltalk:-1, askabout:-1, share:-3, answer:-1, acknowledge:3},
+    topics:["Faith and Worship","JW FAQ"],
+    open:"Wetin you want? I no get time for una kind people.",
+    deflect:["No dey vex me abeg.","I don tell you say I no interested!","Na wetin sef, you dey disturb person for house."],
+    goodEnd:"Hmm... okay, you no too bad. Make you talk small more, I dey listen small.",
+    leftEnd:["Comot for my front o, before I vex well well!","I don warn you — no come back here again."]},
+  {id:"skeptic", label:"Atheist / Skeptic", blurb:"Wants proof and logic, not just Bible verses.",
+    weights:{smalltalk:0, askabout:1, share:0, answer:3, acknowledge:1},
+    topics:["God","Bible","About Spirits"],
+    open:"Nobody don ever prove say God dey. Why I go believe?",
+    deflect:["That one still no convince me.","You just dey quote book — show me proof.","Hmm, I don hear that one before sha."],
+    goodEnd:"Okay, that one make sense small. Make you send me something to read.",
+    leftEnd:["I no fit continue this one — na waste of time.","We no go agree on this, make I go."]},
+  {id:"trinitarian", label:"Already Christian (Trinity)", blurb:"Believes differently already — pushes back on doctrine.",
+    weights:{smalltalk:0, askabout:0, share:-2, answer:3, acknowledge:1},
+    topics:["God","Jesus","Kingdom of God"],
+    open:"My pastor don teach us well well — why I go listen to una own teaching?",
+    deflect:["That one no be wetin my church teach o.","I no sure I agree with that.","Hmm, make I still think about-am."],
+    goodEnd:"Okay, that one dey make sense — no be so my pastor put-am sha. Talk more.",
+    leftEnd:["I go stick to wetin my church teach me, thank you.","We no go gree for this one — make I dey go."]},
+  {id:"curious", label:"Curious / Open", blurb:"Genuinely interested — the easiest one to talk to.",
+    weights:{smalltalk:2, askabout:2, share:2, answer:2, acknowledge:1},
+    topics:null,
+    open:"Ehen, wetin you wan tell me about the Bible?",
+    deflect:["Interesting — tell me more now.","Hmm, I never think about that one before.","Okay, I dey listen."],
+    goodEnd:"Wow, I like this gist — make we continue am another time!",
+    leftEnd:["Sorry, I need to go now, but this one sweet me.","Make we continue this gist later abeg."]},
+  {id:"grieving", label:"Grieving / Hurting", blurb:"Just lost someone — needs comfort, not a debate.",
+    weights:{smalltalk:0, askabout:2, share:1, answer:-1, acknowledge:3},
+    topics:["Life and Death","About Suffer"],
+    open:"I just lost my mama last month... I no even know wetin to think again.",
+    deflect:["*just dey quiet, dey wipe eye*","I no really fit talk plenty now.","Hmm... okay."],
+    goodEnd:"Thank you for talking to me today — e really comfort me small.",
+    leftEnd:["I need to sit down small, abeg excuse me.","Thank you, but I need to rest now."]},
+  {id:"politeno", label:"Polite but Firm “No”", blurb:"Not rude, but firmly not interested — tests how you leave well.",
+    weights:{smalltalk:1, askabout:0, share:-1, answer:1, acknowledge:2},
+    topics:["Faith and Worship","JW FAQ"],
+    open:"I dey okay o, but religion no really be my thing. No vex.",
+    deflect:["I don tell you say na no be my thing.","Thank you, but I no interested still.","I appreciate am, but no."],
+    goodEnd:"Okay, since you no push me, make you leave the small paper — I fit read am later.",
+    leftEnd:["Thank you for understanding, but no be today.","I go just say bye-bye for now, thank you."]},
+  {id:"rude", label:"Rude / Dismissive", blurb:"Outright hostile — the hardest one, tests your composure.",
+    weights:{smalltalk:-2, askabout:-2, share:-3, answer:-1, acknowledge:2},
+    topics:["JW FAQ","Faith and Worship"],
+    open:"Abeg comot for my front with that your Bible talk.",
+    deflect:["I don talk say I no want hear!","Na waste of my time be this.","Oga, no be today abeg."],
+    goodEnd:"Hmm... you sha get patience. Okay, talk small more.",
+    leftEnd:["I don tell you make you comot!","No come back here again abeg."]}
+];
+const convo={persona:null, difficulty:50, engagement:50, startEngagement:50, turn:0, pendingQ:null, transcript:[], active:false, ended:false};
+function personaById(id){ return PERSONAS.find(p=>p.id===id); }
+
+function convoShowSetup(){
+  document.getElementById("convo-setup").hidden=false;
+  document.getElementById("convo-live").hidden=true;
+  convoBuildPersonaGrid();
+  renderConvoStat();
+}
+function convoBuildPersonaGrid(){
+  const wrap=document.getElementById("persona-grid");
+  wrap.innerHTML="";
+  PERSONAS.forEach(p=>{
+    const b=document.createElement("button");
+    b.type="button"; b.className="persona-card";
+    b.setAttribute("aria-pressed", String(convo.persona===p.id));
+    b.innerHTML=`<b>${p.label}</b><span>${p.blurb}</span>`;
+    b.addEventListener("click",()=>{
+      convo.persona=p.id;
+      [...wrap.children].forEach(c=>c.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+    });
+    wrap.appendChild(b);
+  });
+}
+document.getElementById("diff-slider").addEventListener("input",e=>{
+  convo.difficulty=+e.target.value;
+  document.getElementById("diff-value").textContent=convo.difficulty+"%";
+});
+function renderConvoStat(){
+  const done=store.get("convosDone",0);
+  document.getElementById("convo-stat").innerHTML=`<b>${done}</b> gree so far`;
+}
+document.getElementById("convo-start-btn").addEventListener("click",()=>{
+  if(!convo.persona){ convo.persona=PERSONAS[0].id; convoBuildPersonaGrid(); }
+  convoStart();
+});
+function convoStart(){
+  const p=personaById(convo.persona);
+  convo.engagement=Math.max(15, 65-Math.round(convo.difficulty*0.35));
+  convo.startEngagement=convo.engagement;
+  convo.turn=0; convo.pendingQ=null; convo.transcript=[];
+  convo.active=true; convo.ended=false;
+
+  document.getElementById("convo-setup").hidden=true;
+  document.getElementById("convo-live").hidden=false;
+  document.getElementById("convo-turn").hidden=false;
+  document.getElementById("outcome-banner").hidden=true;
+  document.getElementById("pending-q").hidden=true;
+  document.getElementById("convo-persona-name").textContent=p.label;
+  document.getElementById("convo-persona-blurb").textContent=p.blurb+" (Difficulty "+convo.difficulty+"%)";
+  document.getElementById("chat-log").innerHTML="";
+  document.getElementById("convo-answer").value="";
+
+  convoBuildMoveRow();
+  convoAppend("them", p.open);
+  convoRenderMeter();
+  convoUpdatePromptPreview();
+}
+function convoBuildMoveRow(){
+  const wrap=document.getElementById("move-row");
+  wrap.innerHTML="";
+  MOVES.forEach(m=>{
+    const b=document.createElement("button");
+    b.type="button"; b.textContent=m.label;
+    b.addEventListener("click",()=>convoSend(m.id));
+    wrap.appendChild(b);
+  });
+}
+function convoAppend(who,text){
+  convo.transcript.push({who,text});
+  const el=document.createElement("div");
+  el.className="bubble "+(who==="them"?"them":"me");
+  el.textContent=text;
+  const log=document.getElementById("chat-log");
+  log.appendChild(el);
+  log.scrollTop=log.scrollHeight;
+}
+function convoRenderMeter(){
+  const fill=document.getElementById("engagement-fill");
+  const pct=Math.max(0,Math.min(100,convo.engagement));
+  fill.style.width=pct+"%";
+  fill.style.background = pct<30 ? "var(--pop)" : pct<70 ? "var(--yellow)" : "var(--green)";
+  document.getElementById("engagement-label").textContent="How open dem be: "+pct+"%";
+}
+function convoSend(moveId){
+  if(!convo.active) return;
+  const p=personaById(convo.persona);
+  const text=document.getElementById("convo-answer").value.trim();
+  convoAppend("me", text || "( … )");
+  document.getElementById("convo-answer").value="";
+
+  const weight=p.weights[moveId]||0;
+  const decay=Math.round(convo.difficulty/40);
+  convo.engagement=Math.max(0,Math.min(100, convo.engagement+weight-decay));
+  convo.turn++;
+  convo.pendingQ=null;
+  document.getElementById("pending-q").hidden=true;
+  convoRenderMeter();
+
+  if(convo.engagement<=0){
+    convoEnd("left", p.leftEnd[Math.floor(Math.random()*p.leftEnd.length)]);
+    return;
+  }
+  if(moveId==="acknowledge" && convo.turn>=3 && (convo.engagement-convo.startEngagement)>=4){
+    convoEnd("good", p.goodEnd);
+    return;
+  }
+  if(convo.turn>=9){
+    convoEnd("neutral", "Time don pass — the gist just end there for now.");
+    return;
+  }
+
+  const chance=Math.max(5, Math.min(90, convo.engagement-Math.round(convo.difficulty*0.3)));
+  if(Math.random()*100<chance){
+    const pool = p.topics ? MINISTRY.filter(m=>p.topics.includes(m[2])) : MINISTRY;
+    const q=pool[Math.floor(Math.random()*pool.length)];
+    convo.pendingQ=q;
+    convoAppend("them", q[3]);
+    document.getElementById("pending-q-text").textContent=q[3];
+    document.getElementById("pending-q-source").href=q[4];
+    document.getElementById("pending-q").hidden=false;
+  } else {
+    convoAppend("them", p.deflect[Math.floor(Math.random()*p.deflect.length)]);
+  }
+  convoUpdatePromptPreview();
+}
+function convoEnd(kind,text){
+  convo.active=false; convo.ended=true;
+  convoAppend("them", text);
+  document.getElementById("convo-turn").hidden=true;
+  document.getElementById("pending-q").hidden=true;
+  const banner=document.getElementById("outcome-banner");
+  banner.hidden=false;
+  banner.classList.toggle("lose", kind==="left");
+  document.getElementById("outcome-title").textContent =
+    kind==="good" ? "E dey work! 🎉" : kind==="left" ? "Dem comot —" : "Time don pass";
+  document.getElementById("outcome-text").textContent=text;
+  if(kind==="good"){
+    store.set("convosDone", store.get("convosDone",0)+1);
+    renderConvoStat();
+  }
+  convoUpdatePromptPreview();
+}
+document.getElementById("convo-end-btn").addEventListener("click",()=>{
+  if(!convo.active) return;
+  convoEnd("neutral","You end the gist there — no wahala, you fit try another person anytime.");
+});
+document.getElementById("convo-new-btn").addEventListener("click",convoShowSetup);
+document.getElementById("convo-restart-btn").addEventListener("click",convoShowSetup);
+function convoBuildPrompt(){
+  const p=personaById(convo.persona);
+  const lines=convo.transcript.map(t=>(t.who==="them"?"Them: ":"Me: ")+t.text).join("\n");
+  return [
+"I'm practicing a Pidgin conversation for ministry/witnessing practice. Please check MY lines only (marked 'Me:'), not the other person's lines and not the theology.",
+"",
+`Persona: ${p?p.label:"?"} — difficulty ${convo.difficulty}%`,
+"",
+"Transcript:",
+lines || "(nothing said yet)",
+"",
+"Please: 1) say if my Pidgin lines sound natural to a native speaker or too much like translated English, 2) point out specific words or phrases to fix, 3) suggest more natural phrasing that keeps my meaning and tone, 4) keep your reply concise."
+  ].join("\n");
+}
+function convoUpdatePromptPreview(){
+  document.getElementById("convo-ai-prompt-preview").textContent=convoBuildPrompt();
+}
+document.getElementById("convo-ai-copy-btn").addEventListener("click", async ()=>{
+  const text=convoBuildPrompt();
+  const msg=document.getElementById("convo-copy-msg");
+  const details=document.getElementById("convo-ai-preview-details");
+  try{
+    await navigator.clipboard.writeText(text);
+    msg.textContent="Don copy — go paste am for the AI wey you like use.";
+  }catch(e){
+    details.open=true;
+    msg.textContent="E no fit copy by itself — open the preview below, copy am with hand.";
+  }
 });
 
 /* ---------------- init ---------------- */
