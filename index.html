@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>
+/* Gate: this page only loads for someone who has already entered the password
+   on index.html. Same password for everyone, checked there — not real security,
+   just keeps casual visitors from landing straight on the app. */
+try{
+  if(localStorage.getItem("sabi.unlocked")!=="1"){ location.replace("index.html"); }
+}catch(e){}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="Learn Nigerian Pidgin with a hidden-word guessing game, a fill-the-gap game, and a deck of everyday phrases.">
@@ -115,8 +123,7 @@
   }
   .mode[data-goto="fill"] .go{background:var(--yellow); color:var(--yellow-ink)}
   .mode[data-goto="cards"] .go{background:var(--pop); color:#fff}
-  .mode[data-goto="ministry"] .go{background:var(--ink); color:var(--bg)}
-  .mode[data-goto="convo"] .go{background:var(--blue); color:var(--blue-ink)}
+  .mode[data-goto="lessons"] .go{background:var(--blue); color:var(--blue-ink)}
   .chip-tiles{display:flex; gap:5px; margin-top:12px}
   .chip-tiles span{
     width:26px; height:26px; border-radius:6px; display:grid; place-items:center;
@@ -345,147 +352,66 @@
     font-size:clamp(1.7rem,8.5vw,2.5rem); letter-spacing:-.02em; margin:.25rem 0 .15rem;
   }
 
-  /* ---------- MINISTRY PRACTICE ---------- */
-  .min-card{
-    border:2px solid var(--ink); border-radius:22px; background:var(--surface);
-    box-shadow:var(--shadow); padding:26px 24px; margin-bottom:16px;
-    display:flex; flex-direction:column; gap:14px; align-items:center; text-align:center;
+  /* ---------- LESSON PLANS ---------- */
+  .level-badge{
+    display:inline-flex; align-items:center; font-family:"Space Mono",monospace;
+    font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700;
+    padding:4px 10px; border-radius:999px; white-space:nowrap;
   }
-  .min-opener{
-    font-family:"Bricolage Grotesque",sans-serif; font-weight:600;
-    font-size:clamp(1.2rem,5.2vw,1.55rem); line-height:1.35; margin:0; text-wrap:balance;
-  }
-  .min-source{
-    font-family:"Space Mono",monospace; font-size:.76rem; text-transform:uppercase;
-    letter-spacing:.06em; color:var(--ink-dim); text-decoration:none;
-    border-bottom:1px solid var(--line); padding-bottom:2px;
-  }
-  .min-source:hover{color:var(--green); border-color:var(--green)}
-  .min-label{
-    display:block; font-family:"Space Mono",monospace; font-size:.7rem;
-    text-transform:uppercase; letter-spacing:.1em; color:var(--ink-dim); margin-bottom:8px;
-  }
-  .min-answer{
-    width:100%; border:2px solid var(--line); border-radius:14px; background:var(--raise);
-    color:var(--ink); font-family:"Newsreader",serif; font-size:1.05rem; line-height:1.5;
-    padding:14px 16px; resize:vertical; min-height:100px; margin-bottom:14px;
-  }
-  .min-answer:focus{border-color:var(--green); outline:none}
-  .learn-row .clear{color:var(--ink-dim)}
-  .ai-check{margin-top:22px; border-top:1px solid var(--line); padding-top:20px}
-  .ai-check h3{font-size:1.1rem; margin:0 0 6px; font-family:"Bricolage Grotesque",sans-serif}
-  .ai-check > p{font-size:.9rem; color:var(--ink-dim); line-height:1.5; margin:0 0 14px}
-  .ai-links{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
-  .ai-links a{
-    font-family:"Space Mono",monospace; font-size:.8rem; text-decoration:none;
-    color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:8px 14px;
-  }
-  .ai-links a:hover{border-color:var(--green); color:var(--green)}
-  .ai-preview{margin-top:14px}
-  .ai-preview summary{
-    cursor:pointer; font-family:"Space Mono",monospace; font-size:.76rem;
-    text-transform:uppercase; letter-spacing:.08em; color:var(--ink-dim);
-  }
-  .ai-preview pre{
-    white-space:pre-wrap; word-break:break-word; background:var(--surface-2);
-    border-radius:14px; padding:14px 16px; font-family:"Space Mono",monospace;
-    font-size:.8rem; line-height:1.55; margin:10px 0 0; color:var(--ink);
-  }
-  .copy-msg{
-    font-family:"Space Mono",monospace; font-size:.76rem; text-transform:uppercase;
-    letter-spacing:.06em; color:var(--green); text-align:center; margin-top:10px; min-height:1.1rem;
-  }
+  .level-beginner{background:var(--green); color:var(--green-ink)}
+  .level-elementary{background:var(--yellow); color:var(--yellow-ink)}
+  .level-intermediate{background:var(--blue); color:var(--blue-ink)}
+  .level-advanced{background:var(--pop); color:#fff}
+  .level-pro{background:var(--ink); color:var(--bg)}
 
-  /* ---------- PASSWORD LOCK ---------- */
-  .lock{
-    position:fixed; inset:0; z-index:9999; background:var(--bg); color:var(--ink);
-    display:flex; align-items:center; justify-content:center; overflow-y:auto;
-    padding:28px 20px; padding-top:max(28px, env(safe-area-inset-top));
-    padding-bottom:max(28px, env(safe-area-inset-bottom));
+  .lesson-row{
+    width:100%; text-align:left; border:2px solid var(--line); border-radius:16px;
+    background:var(--surface); padding:14px 16px; margin-bottom:10px;
+    display:flex; flex-direction:column; gap:7px; transition:border-color .12s ease;
   }
-  .lock-inner{
-    width:100%; max-width:340px; margin:auto;
-    display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;
-  }
-  .lock-title{
-    font-size:clamp(1.7rem,7vw,2.2rem); font-weight:800; letter-spacing:-.02em;
-    color:var(--ink); margin:.2rem 0 0; font-family:"Bricolage Grotesque",sans-serif;
-  }
-  .lock-sub{margin:0; color:var(--ink-dim); font-size:1rem; line-height:1.4}
-  .pw-input{
-    width:100%; border:2px solid var(--ink); border-radius:14px; background:var(--surface);
-    color:var(--ink); font-family:"Space Mono",monospace; font-size:1.15rem; text-align:center;
-    letter-spacing:.08em; padding:14px 16px; margin-top:10px;
-  }
-  .pw-input:focus{outline:none; border-color:var(--green)}
-  .pw-input.bad{animation:shake .4s ease}
-  .pin-msg{
-    min-height:1.2rem; font-family:"Space Mono",monospace; font-size:.78rem;
-    letter-spacing:.06em; text-transform:uppercase; color:var(--pop);
-  }
-  .lock .btn{margin-top:2px}
+  .lesson-row:active{transform:translateY(1px)}
+  .lesson-row.done{border-color:var(--green)}
+  .lesson-row-top{display:flex; align-items:center; gap:8px}
+  .lesson-num{font-family:"Space Mono",monospace; font-weight:700; font-size:.76rem; color:var(--ink-dim)}
+  .lesson-check{margin-left:auto; color:var(--green); font-weight:700; font-size:1.05rem}
+  .lesson-row-title{font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:1.05rem}
+  .lesson-row-goal{font-size:.86rem; color:var(--ink-dim); line-height:1.4}
 
-  /* ---------- PRACTICE A CONVERSATION ---------- */
-  .convo-lead{font-size:.95rem; color:var(--ink-dim); margin:14px 0 4px}
-  .persona-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 6px}
-  .persona-card{
-    text-align:left; border:2px solid var(--line); border-radius:16px; background:var(--surface);
-    padding:14px; display:flex; flex-direction:column; gap:4px; transition:border-color .12s ease, background .12s ease;
+  .back-inline{
+    border:none; background:none; color:var(--ink-dim); font-family:"Space Mono",monospace;
+    font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; padding:0 0 16px; text-align:left;
   }
-  .persona-card b{font-family:"Bricolage Grotesque",sans-serif; font-size:1rem; font-weight:700}
-  .persona-card span{font-size:.8rem; color:var(--ink-dim); line-height:1.35}
-  .persona-card[aria-pressed="true"]{border-color:var(--blue); background:var(--surface-2)}
-  .diff-row{margin:18px 0 6px}
-  .diff-row input[type=range]{width:100%; margin:10px 0 6px; accent-color:var(--blue)}
-  .diff-labels{
-    display:flex; justify-content:space-between; font-family:"Space Mono",monospace;
-    font-size:.68rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.03em;
+  .back-inline:hover{color:var(--green)}
+  .lesson-d-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+  .lesson-d-num{font-family:"Space Mono",monospace; font-size:.74rem; color:var(--ink-dim)}
+  .lesson-d-title{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:800; font-size:clamp(1.4rem,6vw,1.9rem);
+    margin:0 0 8px; letter-spacing:-.01em; text-wrap:balance;
   }
-  .convo-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:14px}
-  .convo-sub{font-size:.86rem; color:var(--ink-dim); margin-top:2px; max-width:36ch}
-  .meter-row{margin-bottom:16px}
-  .meter{height:10px; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line)}
-  .meter-fill{height:100%; border-radius:999px; width:50%; background:var(--green); transition:width .3s ease, background .3s ease}
-  .meter-label{
-    font-family:"Space Mono",monospace; font-size:.72rem; text-transform:uppercase;
-    letter-spacing:.05em; color:var(--ink-dim); margin-top:7px; text-align:center;
+  .lesson-d-goal{font-size:.98rem; color:var(--ink-dim); line-height:1.5; margin:0 0 20px}
+  .lesson-words{display:flex; flex-direction:column; gap:10px; margin-bottom:20px}
+  .lword-card{border:1px solid var(--line); border-radius:14px; background:var(--surface); padding:13px 15px}
+  .lword-head{display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .lword-head b{font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:1.05rem}
+  .lword-head span{font-size:.9rem; color:var(--ink-dim); text-align:right}
+  .lword-ex{
+    margin-top:6px; font-family:"Newsreader",serif; font-style:italic; font-size:.92rem;
+    color:var(--ink-dim); border-left:2px solid var(--line); padding-left:10px;
   }
-  .chat{
-    display:flex; flex-direction:column; gap:10px; max-height:420px; overflow-y:auto;
-    padding:6px 2px 10px; margin-bottom:6px;
+  .complete-btn{
+    width:100%; border:2px solid var(--ink); border-radius:14px; background:var(--surface); color:var(--ink);
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:1rem;
+    padding:14px; margin-bottom:14px; transition:background .12s ease, color .12s ease, border-color .12s ease;
   }
-  .bubble{
-    max-width:82%; padding:11px 14px; border-radius:16px; font-size:.98rem;
-    line-height:1.42; white-space:pre-wrap; word-break:break-word;
-  }
-  .bubble.them{align-self:flex-start; background:var(--surface-2); color:var(--ink); border-bottom-left-radius:4px}
-  .bubble.me{align-self:flex-end; background:var(--green); color:var(--green-ink); border-bottom-right-radius:4px}
-  .pending-q{
-    border:2px solid var(--blue); border-radius:16px; background:var(--surface);
-    padding:14px 16px; margin-bottom:14px;
-  }
-  .pending-q p{
-    margin:6px 0 8px; font-family:"Bricolage Grotesque",sans-serif; font-weight:600;
-    font-size:1.04rem; line-height:1.35;
-  }
-  .move-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0 14px}
-  .move-row button{
-    border:2px solid var(--ink); border-radius:12px; background:var(--surface); color:var(--ink);
-    padding:11px 8px; font-family:"Bricolage Grotesque",sans-serif; font-weight:600;
-    font-size:.86rem; line-height:1.2; text-align:center;
-    transition:transform .08s ease, background .12s ease;
-  }
-  .move-row button:active{transform:translateY(2px); background:var(--surface-2)}
-  .move-row button:nth-child(5){grid-column:1 / -1}
-  #convo-end-btn{width:100%; margin-top:4px}
-  .outcome-banner .btn{margin-top:14px}
+  .complete-btn.on{background:var(--green); color:var(--green-ink); border-color:var(--green)}
+  .nav-row button:disabled{opacity:.4; cursor:default}
 
   /* ---------- touch devices: don't let hover styles stick after a tap ---------- */
   @media (hover:none){
     .mode:hover{transform:none; box-shadow:var(--shadow-sm); border-color:var(--line)}
     .back:hover,.hint-btn:hover,.nav-row button:hover,
     .learn-row .know:hover,.learn-row .still:hover,.learn-row .clear:hover,
-    .ai-links a:hover,.min-source:hover{
+    .back-inline:hover{
       border-color:var(--line); color:inherit;
     }
     .btn:hover{filter:none}
@@ -504,9 +430,6 @@
     .mode{padding:18px 18px; border-radius:18px}
     .mode h2{font-size:1.35rem}
     .card{min-height:300px; padding:32px 20px 40px}
-    .min-card{padding:20px 18px}
-    .persona-grid{grid-template-columns:1fr}
-    .bubble{max-width:90%}
   }
 
   /* ---------- landscape phone: keep it usable without huge vertical gaps ---------- */
@@ -520,17 +443,6 @@
 </head>
 <body>
 
-<div class="lock" id="lock">
-  <form class="lock-inner" id="lock-form">
-    <div class="eyebrow">Sabi Pidgin</div>
-    <h1 class="lock-title">Enter Password</h1>
-    <p class="lock-sub">Type the password to continue</p>
-    <input class="pw-input" id="pw-input" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Password">
-    <div class="pin-msg" id="pw-msg"></div>
-    <button class="btn" id="pw-submit" type="submit">Enter</button>
-  </form>
-</div>
-
 <div class="app">
 
   <!-- ============ HOME ============ -->
@@ -538,7 +450,7 @@
     <div class="home-head">
       <div class="eyebrow">Naija Pidgin &nbsp;·&nbsp; learn small-small</div>
       <h1 class="wordmark"><span class="sabi">Sabi</span> Pidgin</h1>
-      <p>Five ways to grow your Naija Pidgin — guess the hidden word, fill the missing word, flip through everyday phrases, practice real questions, or hold a full conversation.</p>
+      <p>Four ways to grow your Naija Pidgin — guess the hidden word, fill the missing word, flip through everyday phrases, or work through a full course.</p>
     </div>
 
     <div class="modes">
@@ -569,18 +481,10 @@
         <span class="go" aria-hidden="true">→</span>
       </button>
 
-      <button class="mode" data-goto="ministry">
+      <button class="mode" data-goto="lessons">
         <div>
-          <h2>Ministry Practice</h2>
-          <p>Real Bible questions people dey ask — you write the Pidgin reply, no answer given here. Check am with your own AI after, if you like.</p>
-        </div>
-        <span class="go" aria-hidden="true">→</span>
-      </button>
-
-      <button class="mode" data-goto="convo">
-        <div>
-          <h2>Practice a Conversation</h2>
-          <p>Pick who you dey talk to — busy person, angry person, skeptic, and others — set how hard e go be, then keep the gist flowing.</p>
+          <h2>Lesson Plans</h2>
+          <p>20 lessons from your first hello to full fluency — pick one and work through it at your own pace.</p>
         </div>
         <span class="go" aria-hidden="true">→</span>
       </button>
@@ -681,129 +585,37 @@
     </div>
   </section>
 
-  <!-- ============ MINISTRY PRACTICE ============ -->
-  <section class="screen" id="ministry" hidden>
+  <!-- ============ LESSON PLANS ============ -->
+  <section class="screen" id="lessons" hidden>
     <div class="bar">
       <button class="back" data-goto="home" aria-label="Back to menu">‹</button>
-      <h2>Ministry Practice</h2>
-      <div class="stat" id="ministry-progress"></div>
+      <h2>Lesson Plans</h2>
+      <div class="stat" id="lessons-stat"></div>
     </div>
 
-    <div class="filters" id="min-filters"></div>
-
-    <div class="min-card" id="min-card">
-      <div class="eyebrow" id="min-topic">Topic</div>
-      <p class="min-opener" id="min-opener"></p>
-      <a class="min-source" id="min-source" href="#" target="_blank" rel="noopener">Full answer dey for jw.org ↗</a>
+    <!-- list -->
+    <div id="lessons-list-view">
+      <div class="filters" id="lesson-filters"></div>
+      <div id="lesson-rows"></div>
     </div>
 
-    <label class="min-label" for="min-answer">How you go answer, for Pidgin</label>
-    <textarea class="min-answer" id="min-answer" rows="4" placeholder="Type how you go really talk am…"></textarea>
-
-    <div class="learn-row">
-      <button class="know" id="min-practiced-btn">I don practice ✓</button>
-      <button class="clear" id="min-clear-btn">Clear wetin I write</button>
-    </div>
-
-    <div class="nav-row">
-      <button class="prev" id="min-prev-btn">← Back</button>
-      <button class="shuffle" id="min-shuffle-btn" aria-label="Mix am up">⇄</button>
-      <button class="next" id="min-next-btn">Next →</button>
-    </div>
-    <div class="progress" id="min-progress-text"></div>
-
-    <div class="ai-check">
-      <h3>Make your own AI check your Pidgin</h3>
-      <p>This one go copy the question and wetin you write, put am inside one message wey don ready. This app no dey send anything anywhere — na you go paste am for whichever AI you like use.</p>
-      <button class="btn" id="ai-copy-btn">Copy message to check my Pidgin</button>
-      <div class="copy-msg" id="copy-msg"></div>
-      <div class="ai-links">
-        <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude ↗</a>
-        <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT ↗</a>
-        <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini ↗</a>
+    <!-- detail -->
+    <div id="lessons-detail-view" hidden>
+      <button class="back-inline" id="lesson-back-btn">‹ All lessons</button>
+      <div class="lesson-d-head">
+        <span class="level-badge" id="lesson-d-level">Beginner</span>
+        <span class="lesson-d-num" id="lesson-d-num">Lesson 1 / 20</span>
       </div>
-      <details class="ai-preview" id="ai-preview-details">
-        <summary>See the message</summary>
-        <pre id="ai-prompt-preview"></pre>
-      </details>
-    </div>
-  </section>
+      <h3 class="lesson-d-title" id="lesson-d-title"></h3>
+      <p class="lesson-d-goal" id="lesson-d-goal"></p>
 
-  <!-- ============ PRACTICE A CONVERSATION ============ -->
-  <section class="screen" id="convo" hidden>
-    <div class="bar">
-      <button class="back" data-goto="home" aria-label="Back to menu">‹</button>
-      <h2>Practice a Conversation</h2>
-      <div class="stat" id="convo-stat"></div>
-    </div>
+      <div class="lesson-words" id="lesson-d-words"></div>
 
-    <!-- setup -->
-    <div id="convo-setup">
-      <p class="convo-lead">Who you wan practice with?</p>
-      <div class="persona-grid" id="persona-grid"></div>
+      <button class="complete-btn" id="lesson-complete-btn">I don sabi this lesson ✓</button>
 
-      <div class="diff-row">
-        <label class="min-label" for="diff-slider">How hard e go be — <b id="diff-value">50%</b></label>
-        <input type="range" id="diff-slider" min="1" max="100" value="50">
-        <div class="diff-labels"><span>Soft</span><span>Normal</span><span>Hard well well</span></div>
-      </div>
-
-      <button class="btn" id="convo-start-btn">Start conversation</button>
-    </div>
-
-    <!-- live conversation -->
-    <div id="convo-live" hidden>
-      <div class="convo-head">
-        <div>
-          <div class="eyebrow" id="convo-persona-name">Persona</div>
-          <div class="convo-sub" id="convo-persona-blurb"></div>
-        </div>
-        <button class="clear" id="convo-restart-btn">New person</button>
-      </div>
-
-      <div class="meter-row">
-        <div class="meter"><div class="meter-fill" id="engagement-fill"></div></div>
-        <div class="meter-label" id="engagement-label">How open dem be: 50%</div>
-      </div>
-
-      <div class="chat" id="chat-log"></div>
-
-      <div class="pending-q" id="pending-q" hidden>
-        <div class="eyebrow">Dem ask</div>
-        <p id="pending-q-text"></p>
-        <a class="min-source" id="pending-q-source" href="#" target="_blank" rel="noopener">Full answer dey for jw.org ↗</a>
-      </div>
-
-      <div class="outcome-banner result" id="outcome-banner" hidden>
-        <div class="eyebrow" id="outcome-title">Outcome</div>
-        <p class="trans" id="outcome-text"></p>
-        <button class="btn" id="convo-new-btn">Start new conversation</button>
-      </div>
-
-      <div id="convo-turn">
-        <label class="min-label" for="convo-answer">Wetin you go talk (write your Pidgin reply)</label>
-        <textarea class="min-answer" id="convo-answer" rows="3" placeholder="Type wetin you go really talk…"></textarea>
-
-        <p class="convo-lead">Pick how you go take-am:</p>
-        <div class="move-row" id="move-row"></div>
-
-        <button class="clear" id="convo-end-btn">End the gist here</button>
-      </div>
-
-      <div class="ai-check">
-        <h3>Make your own AI check your Pidgin</h3>
-        <p>This one go copy everything wey you talk for this conversation, put am inside one message wey don ready. This app no dey send anything anywhere — na you go paste am for whichever AI you like use.</p>
-        <button class="btn" id="convo-ai-copy-btn">Copy conversation to check my Pidgin</button>
-        <div class="copy-msg" id="convo-copy-msg"></div>
-        <div class="ai-links">
-          <a href="https://claude.ai/new" target="_blank" rel="noopener">Claude ↗</a>
-          <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT ↗</a>
-          <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini ↗</a>
-        </div>
-        <details class="ai-preview" id="convo-ai-preview-details">
-          <summary>See the message</summary>
-          <pre id="convo-ai-prompt-preview"></pre>
-        </details>
+      <div class="nav-row">
+        <button class="prev" id="lesson-prev-btn">← Prev</button>
+        <button class="next" id="lesson-next-btn">Next →</button>
       </div>
     </div>
   </section>
@@ -916,47 +728,14 @@ const store={
   set(k,v){ try{localStorage.setItem("sabi."+k,JSON.stringify(v));}catch(e){} }
 };
 
-/* ---------------- password lock ---------------- */
-/* Same password for everyone — this only keeps casual visitors out, since anyone
-   who views the page source can read it. Not real security. */
-const SITE_PASSWORD="pidginpadi1914";
-const lockEl=document.getElementById("lock");
-function siteUnlocked(){ try{ return localStorage.getItem("sabi.unlocked")==="1"; }catch(e){ return false; } }
-function initLock(){
-  if(siteUnlocked()){ lockEl.hidden=true; return; }
-  lockEl.hidden=false;
-  document.body.style.overflow="hidden";
-  setTimeout(()=>document.getElementById("pw-input").focus(),50);
-}
-document.getElementById("lock-form").addEventListener("submit",e=>{
-  e.preventDefault();
-  const input=document.getElementById("pw-input");
-  const msg=document.getElementById("pw-msg");
-  if(input.value.trim().toLowerCase()===SITE_PASSWORD.toLowerCase()){
-    try{ localStorage.setItem("sabi.unlocked","1"); }catch(err){}
-    lockEl.hidden=true;
-    document.body.style.overflow="";
-    msg.textContent="";
-  } else {
-    msg.textContent="Wrong password";
-    input.classList.remove("bad"); void input.offsetWidth; input.classList.add("bad");
-    input.value=""; input.focus();
-  }
-});
-window.addEventListener("keydown",e=>{
-  if(lockEl.hidden) return;
-  e.stopImmediatePropagation();
-},true);
-
 /* ---------------- routing ---------------- */
-const screens=["home","game","cards","fill","ministry","convo"];
+const screens=["home","game","cards","fill","lessons"];
 function show(name){
   screens.forEach(s=>{ document.getElementById(s).hidden = (s!==name); });
   if(name==="game" && !game.active) newGame();
   if(name==="cards"){ computeList(); renderCard(); }
   if(name==="fill" && !fill.active) newFill();
-  if(name==="ministry"){ minComputeList(); minRender(); }
-  if(name==="convo"){ convoShowSetup(); }
+  if(name==="lessons"){ lessonsShowList(); }
   window.scrollTo(0,0);
 }
 function goto(name){ location.hash = name==="home" ? "" : name; }
@@ -975,10 +754,11 @@ function renderHomeFoot(){
   const learn=(store.get("learning",[])||[]).length;
   const known=(store.get("known",[])||[]).length;
   const left=CARDS.length-known;
+  const lessonsDone=(store.get("lessonsDone",[])||[]).length;
   const cc=document.getElementById("card-count");
   if(cc) cc.textContent=left;
   document.getElementById("home-foot").innerHTML=
-    `<b>${best}</b> best streak &nbsp;·&nbsp; <b>${learn}</b> to review &nbsp;·&nbsp; <b>${known}</b> learned &nbsp;·&nbsp; <b>${left}</b> phrase${left===1?"":"s"} left`;
+    `<b>${best}</b> best streak &nbsp;·&nbsp; <b>${known}</b> learned &nbsp;·&nbsp; <b>${lessonsDone}</b> / 20 lessons &nbsp;·&nbsp; <b>${left}</b> phrase${left===1?"":"s"} left`;
 }
 
 /* ---------------- word game ---------------- */
@@ -1369,387 +1149,128 @@ function answerFill(btn,choice){
 }
 document.getElementById("fill-again").addEventListener("click",newFill);
 
-/* ---------------- ministry practice ---------------- */
-/* Practice-only: no answers given here, nothing in this app calls any AI.
-   Each entry is [id, group, topic, question, sourceUrl].
-   Questions are real Bible-teaching / FAQ question TITLES from jw.org's own
-   Nigerian Pidgin site (wes-x-pgw) — the titles only, not their answer text.
-   sourceUrl points back to the jw.org listing page the question belongs to,
-   so the full answer stays on jw.org rather than being reproduced here. */
-const MINISTRY=[["bq-god-who-be-jehovah","bible","God","Who Be Jehovah?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-e-good-make-we-de-blame-","bible","God","E Good Make We De Blame God for the Suffer-Suffer Wey We De Face?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-wetin-be-the-holy-spirit","bible","God","Wetin Be the Holy Spirit?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-dey","bible","God","God Dey?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-na-just-person-wey-g","bible","God","God Na Just Person Wey Get Power?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-dey-everywhere","bible","God","God Dey Everywhere?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-the-teaching-say-god-na-","bible","God","The Teaching Say God Na Three In One Dey for Bible?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-mary-na-the-mother-of-go","bible","God","Mary na the 'Mother of God'?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-de-change-e-mind","bible","God","God De Change E Mind?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-name-na-jesus","bible","God","God Name Na Jesus?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-how-many-name-god-get","bible","God","How Many Name God Get?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-wetin-god-want-make-i-do","bible","God","Wetin God Want Make I Do With My Life?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-get-one-particular-p","bible","God","God Get One Particular Place Wey E De Live?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-how-you-fit-really-dey-c","bible","God","How You Fit Really Dey Close to God?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-who-or-wetin-be-the-alph","bible","God","Who or Wetin Be \"the Alpha and the Omega\"?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-anybody-don-ever-see-god","bible","God","Anybody Don Ever See God?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-god-get-name","bible","God","God Get Name?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-god-wetin-bible-talk-about-t","bible","God","Wetin Bible talk about the freedom wey person get to choose wetin e want do? Na God de control your future?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-be-the-sign-of-the","bible","Bible","Wetin Be the Sign of the \"Last Days,\" or \"End Time\"?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-be-the-war-of-arma","bible","Bible","Wetin Be the War of Armageddon?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-they-go-destroy-this-ear","bible","Bible","They Go Destroy This Earth?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-god-kingdom-go-do","bible","Bible","Wetin God Kingdom Go Do?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-women-for-bible-wetin-we","bible","Bible","Women for Bible—Wetin We Fit Learn From Them?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-who-be-john-the-baptist","bible","Bible","Who Be John the Baptist?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-who-be-mary-magdalene","bible","Bible","Who Be Mary Magdalene?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-bible-talk-about-d","bible","Bible","Wetin Bible Talk About Daniel?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-god-make-just-one-cell-a","bible","Bible","God Make Just One Cell and the Cell Change to Different-Different Other Kinds of Life?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-bible-fit-help-me-to-get","bible","Bible","Bible Fit Help Me to Get Happy Family?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-bible-talk-about-f","bible","Bible","Wetin Bible Talk About Friendship?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-e-mean-to-love-you","bible","Bible","Wetin e Mean to \"Love Your Enemies\"?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-how-i-fit-make-good-deci","bible","Bible","How I Fit Make Good Decision?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-money-de-cause-all-kinds","bible","Bible","Money De Cause All Kinds of Wicked Things?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-bible-fit-help-you-cope-","bible","Bible","Bible Fit Help You Cope With Serious Sickness Wey No Gree Go?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-bible-na-book-wey-people","bible","Bible","Bible Na Book Wey People Use Their Sense Write?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-they-don-change-the-mess","bible","Bible","They Don Change the Message Inside Bible?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-which-time-god-start-to-","bible","Bible","Which Time God Start to Create Everything for Heaven and Earth?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-science-and-bible-de-agr","bible","Bible","Science and Bible De Agree?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-be-the-bible","bible","Bible","Wetin Be the Bible?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-the-book-of-revela","bible","Bible","Wetin the Book of Revelation Mean?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-be-prophecy","bible","Bible","Wetin Be Prophecy?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-the-things-wey-bible-tal","bible","Bible","The Things Wey Bible Talk About the Messiah De Really Prove Say Jesus Na the Messiah?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-be-the-new-jerusal","bible","Bible","Wetin Be the New Jerusalem?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-who-be-the-rich-man-and-","bible","Bible","Who Be the Rich Man and Lazarus?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-e-mean-to-be-good-","bible","Bible","Wetin e Mean to Be \"Good Samaritan\"?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-bible-wetin-be-great-tribulati","bible","Bible","Wetin Be Great Tribulation?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-jesus-who-be-antichrist","bible","Jesus","Who Be Antichrist?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-jesus-how-jesus-save-us","bible","Jesus","How Jesus Save Us?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-jesus-how-the-death-of-jesus-p","bible","Jesus","How the Death of Jesus Pay the \"Price to Free Plenty People\"?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-jesus-why-bible-call-jesus-the","bible","Jesus","Why Bible Call Jesus the Son of God?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-jesus-who-be-the-chief-angel-m","bible","Jesus","Who Be the Chief Angel Michael?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-jesus-how-jesus-be","bible","Jesus","How Jesus Be?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-kingdom-of-god-the-kingdom-of-god-dey-i","bible","Kingdom of God","The Kingdom of God Dey Inside Your Heart?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-kingdom-of-god-wetin-be-the-kingdom-of-","bible","Kingdom of God","Wetin Be the Kingdom of God?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-kingdom-of-god-wetin-be-the-keys-of-the","bible","Kingdom of God","Wetin Be \"the Keys of the Kingdom\"?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-about-spirits-devil-na-real-person","bible","About Spirits","Devil Na Real Person?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-about-spirits-who-de-go-heaven","bible","About Spirits","Who De Go Heaven?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-hell-dey-real-wetin-bibl","bible","Life and Death","Hell Dey Real? Wetin Bible Talk Say Hell Be?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-animals-de-go-heaven","bible","Life and Death","Animals De Go Heaven?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-wetin-be-soul","bible","Life and Death","Wetin Be Soul?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-why-we-dey-this-earth","bible","Life and Death","Why We Dey This Earth?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-wetin-be-resurrection","bible","Life and Death","Wetin Be Resurrection?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-how-bible-fit-help-peopl","bible","Life and Death","How Bible Fit Help People Wey De Think About to Kill Theirself?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-life-and-death-wetin-go-help-you-no-de-","bible","Life and Death","Wetin Go Help You No De Fear Death Again?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-about-suffer-wetin-bible-talk-about-n","bible","About Suffer","Wetin Bible Talk About Natural Disaster?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-about-suffer-i-fit-get-comfort-from-b","bible","About Suffer","I Fit Get Comfort From Bible","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-about-suffer-why-they-kill-plenty-peo","bible","About Suffer","Why They Kill Plenty People for Europe?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-about-suffer-wetin-bible-talk-about-d","bible","About Suffer","Wetin Bible Talk About Disease Wey De Spread Around the World?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-wetin-e-mean-to-near-god","bible","Faith and Worship","Wetin E Mean To Near God? I Fit Near God Even If I No Join Any Religion?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-wetin-be-sin","bible","Faith and Worship","Wetin Be Sin?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-wetin-e-mean-to-forgive","bible","Faith and Worship","Wetin E Mean to Forgive?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-god-go-forgive-me","bible","Faith and Worship","God Go Forgive Me?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-to-play-gamble-na-sin","bible","Faith and Worship","To Play Gamble Na Sin?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-to-pay-tithe-wetin-bible","bible","Faith and Worship","To Pay Tithe, Wetin Bible Talk?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-wetin-bible-talk-about-t","bible","Faith and Worship","Wetin Bible Talk About to Give?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-e-dey-important-to-dey-f","bible","Faith and Worship","E Dey Important to Dey for One Religion?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-wetin-be-baptism","bible","Faith and Worship","Wetin Be Baptism?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-how-we-fit-pray-the-lord","bible","Faith and Worship","How We Fit Pray—The Lord's Prayer Na the Best Way to Pray?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-e-good-make-we-pray-to-s","bible","Faith and Worship","E Good Make We Pray to Saints?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-all-religions-na-the-sam","bible","Faith and Worship","All Religions Na the Same? And All of Them De Lead to God?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-faith-and-worship-christian-must-obey-the-","bible","Faith and Worship","Christian Must Obey the Law of the Sabbath?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-celebrations-how-halloween-take-start","bible","Celebrations","How Halloween Take Start?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-celebrations-wetin-bible-talk-about-e","bible","Celebrations","Wetin Bible Talk About Easter?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-the-way-we-suppose-de-li-to-comot-belle-wetin-bib","bible","The Way We Suppose De Live","To Comot Belle, Wetin Bible Talk About-Am?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-the-way-we-suppose-de-li-to-draw-tattoos-for-body","bible","The Way We Suppose De Live","To Draw Tattoos for Body, Wetin Bible Talk About-am?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-the-way-we-suppose-de-li-wetin-bible-talk-about-t","bible","The Way We Suppose De Live","Wetin Bible Talk About to De Do Makeup and Wear Things Like Chain and Earring?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-the-way-we-suppose-de-li-wetin-bible-talk-about-m","bible","The Way We Suppose De Live","Wetin Bible Talk About Marriage?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-the-way-we-suppose-de-li-wetin-bible-talk-about-m-2","bible","The Way We Suppose De Live","Wetin Bible Talk About Man and Woman Wey De Stay Together and They No Marry?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bq-the-way-we-suppose-de-li-wetin-bible-talk-about-h","bible","The Way We Suppose De Live","Wetin Bible Talk About How to Care for Our Old Papa and Mama?","https://www.jw.org/wes-x-pgw/wetin-bible-teach/questions/"],["bv-genesis-1-1","verses","Bible Verse","Genesis 1:1 — “For the Beginning, God Create the Heavens and the Earth”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-genesis-1-26","verses","Bible Verse","Genesis 1:26 — “Make We Make Man for Our Image”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-exodus-20-12","verses","Bible Verse","Exodus 20:12 — “Honor Your Papa and Your Mama”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-numbers-6-24-26","verses","Bible Verse","Numbers 6:24-26 — “Make the LORD Bless You and Keep You”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-joshua-1-9","verses","Bible Verse","Joshua 1:9 — “Dey Strong and Get Strong Heart”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-psalm-23-4","verses","Bible Verse","Psalm 23:4 — “Even Though Say I De Waka for the Valley”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-psalm-37-4","verses","Bible Verse","Psalm 37:4 — “De Happy Because of the LORD”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-psalm-46-10","verses","Bible Verse","Psalm 46:10 — “Dey Quiet, and Know Say I Be God”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-proverbs-3-5-6","verses","Bible Verse","Proverbs 3:5, 6 — “No Depend on the Things Wey You Know”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-proverbs-16-3","verses","Bible Verse","Proverbs 16:3 — “Put Everything Wey You De Do for the Hand”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-proverbs-17-17","verses","Bible Verse","Proverbs 17:17 — “Real Friend De Show Love”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-proverbs-22-6","verses","Bible Verse","Proverbs 22:6 — “Train Pikin to Follow the Right Way”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-ecclesiastes-3-11","verses","Bible Verse","Ecclesiastes 3:11 — “E Don Make Everything Dey Fine”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["bv-isaiah-41-10","verses","Bible Verse","Isaiah 41:10 — “No Fear, I Dey With You”","https://www.jw.org/wes-x-pgw/wetin-bible-teach/bible-verses/"],["faq-why-jehovah-witness-them","faq","JW FAQ","Why Jehovah Witness Them No De Do Birthday?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-wetin-be-the-governing-b","faq","JW FAQ","Wetin Be the Governing Body of Jehovah Witness?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-d","faq","JW FAQ","Jehovah Witness People De Do Burial?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-b","faq","JW FAQ","Jehovah Witness People Believe Say Na Them Get the True Religion?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-dey-agai","faq","JW FAQ","Jehovah Witness Dey Against Vaccine?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-b-2","faq","JW FAQ","Jehovah Witness People Believe Say God Create Everything for Ordinary Six Days?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-d-2","faq","JW FAQ","Jehovah Witness People Don Change the Bible to Agree With Wetin Them Believe?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-peop","faq","JW FAQ","Why Jehovah Witness People Don Change Some Things Wey Them Believe?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-no-d","faq","JW FAQ","Why Jehovah Witness No De Use Cross for Worship?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-jehovah-witness-them","faq","JW FAQ","How Jehovah Witness Them De Use Contributions?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-we-de-call-ourself-j","faq","JW FAQ","Why We De Call Ourself Jehovah Witness?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-many-jehovah-witness","faq","JW FAQ","How Many Jehovah Witness People Dey for the Whole World?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-jehovah-witness-de-g","faq","JW FAQ","How Jehovah Witness De Get Money to Do Their Work?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-jehovah-witness-de-t","faq","JW FAQ","How Jehovah Witness De Treat People Wey Dey Their Religion Before?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-peop-2","faq","JW FAQ","Why Jehovah Witness People De Preach to People Wey Don Tell Them Before Say 'I No Want Hear'?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-the-bible-study-wey-","faq","JW FAQ","How the Bible Study Wey Jehovah Witness De Do With People De Be?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-the-way-jehovah-witn","faq","JW FAQ","Why the Way Jehovah Witness People De Do Memorial Dey Different From the Way Other Religions De Do-am?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-g","faq","JW FAQ","Jehovah Witness People Get Their Own Bible?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-peop-3","faq","JW FAQ","Why Jehovah Witness People No De Put Hand for Politics?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-peop-4","faq","JW FAQ","Why Jehovah Witness People No De Join for Ceremony Wey Concern Their Country?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-wetin-happen-to-jehovah-","faq","JW FAQ","Wetin Happen to Jehovah Witness People for the Time Wey Them Kill Plenty People for Europe?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-d-3","faq","JW FAQ","Jehovah Witness People De Scatter Family or Them De Make Family Dey as One?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-g-2","faq","JW FAQ","Jehovah Witness People Get Laws Wey Their People De Follow When Them De Date?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-jehovah-witness-peop","faq","JW FAQ","How Jehovah Witness People De See Divorce?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-de-ban-s","faq","JW FAQ","Jehovah Witness De Ban Some Films, Books, or Songs?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-no-d-2","faq","JW FAQ","Why Jehovah Witness No De Do Some Celebrations?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-why-jehovah-witness-peop-5","faq","JW FAQ","Why Jehovah Witness People No De Celebrate Easter?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-how-jehovah-witness-wedd","faq","JW FAQ","How Jehovah Witness Wedding De Be?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-jehovah-witness-people-n","faq","JW FAQ","Jehovah Witness People Na Christian?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"],["faq-wetin-i-need-to-do-to-be","faq","JW FAQ","Wetin I Need to Do to Be Jehovah Witness Person?","https://www.jw.org/wes-x-pgw/jehovah-witness-people/faq/"]];
-const MIN_FILTERS=[
-  {id:"all",label:"All"},
-  {id:"bible",label:"Bible Questions"},
-  {id:"verses",label:"Bible Verses"},
-  {id:"faq",label:"JW FAQ"}
-];
-const minState={filter:"all", idx:0, list:[]};
+/* ---------------- lesson plans ---------------- */
+/* Each entry is [id, level, title, goal, words[]]. The words are exact matches
+   against CARDS[i][0], so each lesson's translation/meaning/example is pulled
+   live from the same Flashcards data — nothing duplicated. */
+const LESSONS=[[1,"Beginner","Greetings & First Hellos","The handshake in word form — how to open any conversation and ask how someone's doing.",["How far?","You nko?","I dey fine","How you dey?","How body?","Na so","A-beg","Long time","Well done","We move"]],[2,"Beginner","Asking Questions","The question words you'll reach for constantly — what, which, how much, why, where.",["Wetin?","Which one?","Wetin be this?","You get am?","How much?","Which time?","Why now?","Which side?","Who be that?","Na who?"]],[3,"Beginner","Talking About Yourself","Family words and the basics of describing who you are and where you're from.",["Pikin","Broda","Sista","Aunty","My people","Village","Yard","Compound","Firstborn","Last born"]],[4,"Beginner","Everyday Small Words","The tiny filler words that make you sound like a speaker, not a phrasebook.",["Abi?","Oya","Ehen","Na wa o","Sha","Sabi","Comot","No shaking","You hear?","God e-p"]],[5,"Beginner","Numbers, Money & Prices","Talking cash — prices, change, and the slang for money itself.",["Urgent 2k","Kobo","Bar","Kpa","Alert","Balance","Broke","Cool money","Sponsor","Account dey breathe"]],[6,"Elementary","Food & Chop Culture","What to call your favourite dishes and how to talk about eating.",["Chop","Swallow","Jollof","Amala","Eba","Fufu","Suya","Akara","Mama put","Small Chops","Chop belle full"]],[7,"Elementary","Getting Around — Transport & Waka","Buses, bikes, traffic and the words you'll hear on every journey.",["Danfo","Keke","Okada","Trek","Go-slow","Hold-up","Conductor","One-way","Fuel queue","Waka pass"]],[8,"Elementary","Time & Everyday Expressions","How soon is ‘now now’? Pidgin's own sense of time and pace.",["Now now","Just now","Later later","Sharp-sharp","Small-time","Today-today","Tay tay","Every time","That time","African time"]],[9,"Elementary","How I Feel — Emotions & Reactions","Naming your mood — happy, angry, tired, and everything between.",["Body dey sweet me","Vex","Para","Wahala","Gbege","Taya","Heart cut","Belle","I no fit shout","Cold water"]],[10,"Elementary","House, Family & Home Life","The people and phrases of home — greetings for family and visitors.",["House-help","Senior Brother","Madam","Wife material","In-law","Face me I face you","Waka come","Greet the house","How the family?","I hail o"]],[11,"Intermediate","Money Talk & the Hustle","How Nigerians actually talk about earning, hustling, and getting by.",["Hustle","Grind","Sapa","Runs","Chop money","Egunje","Yahoo","Maga don pay","Work-chop","Boss up"]],[12,"Intermediate","Parties & Owambe Culture","The vocabulary of a proper Naija party, from the cloth to the dancing.",["Owambe","Aso ebi","Spraying","Gbedu","Turn up","Reception","Detty December","Chop knuckle","Gyrate","Souvenir"]],[13,"Intermediate","Street Slang & Everyday Banter","The slang that makes conversation feel alive and current.",["Cruise","Vibe","Mad o","E choke","No cap","Gbagaun","Jasi","Yakata","Werey","On point","Off point"]],[14,"Intermediate","Fashion, Swag & Looking Good","Talking style — clothes, confidence, and looking sharp.",["Drip","Fly","Slay","Ankara","Agbada","Gele","Kampala","Baffs","Rock am","Corporate"]],[15,"Intermediate","Work & Office Pidgin","How colleagues actually talk about bosses, hours, and getting things done.",["Oga","Oga at the top","Staff","Overtime","White-collar","Sign out","Connect","Show face","Ghost worker","Sidon look"]],[16,"Advanced","Wisdom, Sayings & Common Truths","The sayings people reach for to explain how life just is.",["Na so e be","E go better","God dey","True word","No be lie","Nothing spoil","E remain small","Carry your cross","Case no be case","To be sincere"]],[17,"Advanced","Wahala — Arguments & Conflict","Handling tension, disagreement, and getting out of trouble gracefully.",["Yawa","Strong-head","Draw rain","No be small thing","K-leg","Fall my hand","I go change am for you","Scatter my head","E don red","E pain me"]],[18,"Advanced","Comfort, Encouragement & Support","What to say when someone needs lifting up, not lecturing.",["I second am","Manage","God when","E sweet me","No dulling","Free me","I no send","Hold your brain","Recover small","Sun catch me"]],[19,"Pro","Reading the Room — Tone & Double Meaning","The sharp, sideways phrases that carry more than their words say.",["Mtcheew","Gbam!","Shine eye","Eye dirty","Bone face","Look-u-look-u","Talk-u-talk-u","Oversabi","Sharp mouth","Long throat"]],[20,"Pro","Speak Like a Native — Full Fluency","The last stretch — idioms and rhythm that make you sound like you grew up speaking it.",["As you see me so","Wetin man go do","Na condition","Do quick","Gidigba","Sabi road","Rugged","Correct","Kpafuka","Japa"]]];
+const LEVELS=["All","Beginner","Elementary","Intermediate","Advanced","Pro"];
+const lessonState={filter:"All", openId:null};
 
-function minComputeList(){
-  minState.list = minState.filter==="all" ? MINISTRY.slice() : MINISTRY.filter(m=>m[1]===minState.filter);
-  if(minState.idx>=minState.list.length) minState.idx=0;
+function levelClass(level){ return "level-"+level.toLowerCase(); }
+function cardByWord(word){ return CARDS.find(c=>c[0]===word); }
+
+function lessonsShowList(){
+  document.getElementById("lessons-list-view").hidden=false;
+  document.getElementById("lessons-detail-view").hidden=true;
+  lessonsBuildRows();
+  renderLessonsStat();
 }
-function minBuildFilters(){
-  const wrap=document.getElementById("min-filters");
+function lessonsBuildList(){
+  const wrap=document.getElementById("lesson-filters");
   wrap.innerHTML="";
-  MIN_FILTERS.forEach(f=>{
+  LEVELS.forEach(lv=>{
     const b=document.createElement("button");
-    b.textContent=f.label;
-    b.setAttribute("aria-pressed", String(minState.filter===f.id));
+    b.type="button"; b.textContent=lv;
+    b.setAttribute("aria-pressed", String(lessonState.filter===lv));
     b.addEventListener("click",()=>{
-      minState.filter=f.id; minState.idx=0;
-      minComputeList(); minBuildFilters(); minRender();
-    });
-    wrap.appendChild(b);
-  });
-}
-function minRender(){
-  const m=minState.list[minState.idx];
-  const [id,,topic,question,sourceUrl]=m;
-
-  document.getElementById("min-topic").textContent=topic;
-  document.getElementById("min-opener").textContent=question;
-  document.getElementById("min-source").href=sourceUrl;
-
-  const drafts=store.get("ministryDrafts",{});
-  document.getElementById("min-answer").value = drafts[id] || "";
-
-  const practiced=new Set(store.get("ministryPracticed",[]));
-  document.getElementById("min-practiced-btn").classList.toggle("on", practiced.has(id));
-
-  document.getElementById("min-progress-text").textContent=`${minState.idx+1} / ${minState.list.length}`;
-  document.getElementById("ministry-progress").innerHTML=`<b>${practiced.size}</b> / ${MINISTRY.length} you don practice`;
-
-  document.getElementById("copy-msg").textContent="";
-  minUpdatePromptPreview();
-}
-function minMove(step){
-  const n=minState.list.length; if(!n) return;
-  minState.idx=(minState.idx+step+n)%n;
-  minRender();
-}
-document.getElementById("min-answer").addEventListener("input",e=>{
-  const [id]=minState.list[minState.idx];
-  const drafts=store.get("ministryDrafts",{});
-  drafts[id]=e.target.value;
-  store.set("ministryDrafts",drafts);
-  minUpdatePromptPreview();
-});
-document.getElementById("min-practiced-btn").addEventListener("click",()=>{
-  const [id]=minState.list[minState.idx];
-  const practiced=new Set(store.get("ministryPracticed",[]));
-  practiced.has(id) ? practiced.delete(id) : practiced.add(id);
-  store.set("ministryPracticed",[...practiced]);
-  minRender();
-});
-document.getElementById("min-clear-btn").addEventListener("click",()=>{
-  const [id]=minState.list[minState.idx];
-  const drafts=store.get("ministryDrafts",{});
-  delete drafts[id];
-  store.set("ministryDrafts",drafts);
-  document.getElementById("min-answer").value="";
-  minUpdatePromptPreview();
-});
-document.getElementById("min-prev-btn").addEventListener("click",()=>minMove(-1));
-document.getElementById("min-next-btn").addEventListener("click",()=>minMove(1));
-document.getElementById("min-shuffle-btn").addEventListener("click",()=>{
-  for(let i=minState.list.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [minState.list[i],minState.list[j]]=[minState.list[j],minState.list[i]];
-  }
-  minState.idx=0; minRender();
-});
-function minBuildPrompt(){
-  const [,,topic,question]=minState.list[minState.idx];
-  const ans=document.getElementById("min-answer").value.trim();
-  return [
-"I'm practicing replying in Nigerian Pidgin English to a Bible-related question. Please check my Pidgin, not the theology.",
-"",
-`Question: ${question}`,
-`Topic: ${topic}`,
-"",
-`My draft reply in Pidgin: "${ans || "(I no write anything yet)"}"`,
-"",
-"Please: 1) say if this sounds natural to a native Pidgin speaker or too much like translated English, 2) point out specific words or phrases to fix, 3) suggest a more natural version that keeps my meaning and tone, 4) keep your reply brief."
-  ].join("\n");
-}
-function minUpdatePromptPreview(){
-  document.getElementById("ai-prompt-preview").textContent=minBuildPrompt();
-}
-document.getElementById("ai-copy-btn").addEventListener("click", async ()=>{
-  const text=minBuildPrompt();
-  const msg=document.getElementById("copy-msg");
-  const details=document.getElementById("ai-preview-details");
-  try{
-    await navigator.clipboard.writeText(text);
-    msg.textContent="Don copy — go paste am for the AI wey you like use.";
-  }catch(e){
-    details.open=true;
-    msg.textContent="E no fit copy by itself — open the preview below, copy am with hand.";
-  }
-});
-window.addEventListener("keydown",e=>{
-  if(document.getElementById("ministry").hidden) return;
-  if(document.activeElement && document.activeElement.id==="min-answer") return;
-  if(e.key==="ArrowLeft") minMove(-1);
-  else if(e.key==="ArrowRight") minMove(1);
-});
-
-/* ---------------- practice a conversation ---------------- */
-/* Still no AI: each persona is a fixed set of authored traits, and every turn is
-   resolved by simple rules — a chosen move has a fixed effect on an "engagement"
-   meter, plus a per-turn decay driven by the difficulty slider. When the persona is
-   engaged enough, it raises a real question drawn from the same MINISTRY bank used
-   in Ministry Practice, tagged to that persona's usual topics. */
-const MOVES=[
-  {id:"smalltalk", label:"Small talk"},
-  {id:"askabout",  label:"Ask about them"},
-  {id:"share",     label:"Share a Bible thought"},
-  {id:"answer",    label:"Answer their question"},
-  {id:"acknowledge", label:"Acknowledge & ease off"}
-];
-const PERSONAS=[
-  {id:"busy", label:"Busy Person", blurb:"In a hurry, checking the time — easily lost if you ramble.",
-    weights:{smalltalk:1, askabout:-1, share:-2, answer:1, acknowledge:2},
-    topics:["God","Bible"],
-    open:"Abeg make e quick, I dey rush reach work.",
-    deflect:["Abeg make e quick, I no get time.","I really need to go now o.","Wetin be the summary sef?","Make we cut the long story short."],
-    goodEnd:"Okay — since you no waste my time, drop the small info, I go check am when I free.",
-    leftEnd:["I really need to go now, abeg excuse me.","Sorry o, I dey run late — nice talking sha."]},
-  {id:"angry", label:"Angry / Defensive", blurb:"Testy and easily offended — snaps back fast.",
-    weights:{smalltalk:-1, askabout:-1, share:-3, answer:-1, acknowledge:3},
-    topics:["Faith and Worship","JW FAQ"],
-    open:"Wetin you want? I no get time for una kind people.",
-    deflect:["No dey vex me abeg.","I don tell you say I no interested!","Na wetin sef, you dey disturb person for house."],
-    goodEnd:"Hmm... okay, you no too bad. Make you talk small more, I dey listen small.",
-    leftEnd:["Comot for my front o, before I vex well well!","I don warn you — no come back here again."]},
-  {id:"skeptic", label:"Atheist / Skeptic", blurb:"Wants proof and logic, not just Bible verses.",
-    weights:{smalltalk:0, askabout:1, share:0, answer:3, acknowledge:1},
-    topics:["God","Bible","About Spirits"],
-    open:"Nobody don ever prove say God dey. Why I go believe?",
-    deflect:["That one still no convince me.","You just dey quote book — show me proof.","Hmm, I don hear that one before sha."],
-    goodEnd:"Okay, that one make sense small. Make you send me something to read.",
-    leftEnd:["I no fit continue this one — na waste of time.","We no go agree on this, make I go."]},
-  {id:"trinitarian", label:"Already Christian (Trinity)", blurb:"Believes differently already — pushes back on doctrine.",
-    weights:{smalltalk:0, askabout:0, share:-2, answer:3, acknowledge:1},
-    topics:["God","Jesus","Kingdom of God"],
-    open:"My pastor don teach us well well — why I go listen to una own teaching?",
-    deflect:["That one no be wetin my church teach o.","I no sure I agree with that.","Hmm, make I still think about-am."],
-    goodEnd:"Okay, that one dey make sense — no be so my pastor put-am sha. Talk more.",
-    leftEnd:["I go stick to wetin my church teach me, thank you.","We no go gree for this one — make I dey go."]},
-  {id:"curious", label:"Curious / Open", blurb:"Genuinely interested — the easiest one to talk to.",
-    weights:{smalltalk:2, askabout:2, share:2, answer:2, acknowledge:1},
-    topics:null,
-    open:"Ehen, wetin you wan tell me about the Bible?",
-    deflect:["Interesting — tell me more now.","Hmm, I never think about that one before.","Okay, I dey listen."],
-    goodEnd:"Wow, I like this gist — make we continue am another time!",
-    leftEnd:["Sorry, I need to go now, but this one sweet me.","Make we continue this gist later abeg."]},
-  {id:"grieving", label:"Grieving / Hurting", blurb:"Just lost someone — needs comfort, not a debate.",
-    weights:{smalltalk:0, askabout:2, share:1, answer:-1, acknowledge:3},
-    topics:["Life and Death","About Suffer"],
-    open:"I just lost my mama last month... I no even know wetin to think again.",
-    deflect:["*just dey quiet, dey wipe eye*","I no really fit talk plenty now.","Hmm... okay."],
-    goodEnd:"Thank you for talking to me today — e really comfort me small.",
-    leftEnd:["I need to sit down small, abeg excuse me.","Thank you, but I need to rest now."]},
-  {id:"politeno", label:"Polite but Firm “No”", blurb:"Not rude, but firmly not interested — tests how you leave well.",
-    weights:{smalltalk:1, askabout:0, share:-1, answer:1, acknowledge:2},
-    topics:["Faith and Worship","JW FAQ"],
-    open:"I dey okay o, but religion no really be my thing. No vex.",
-    deflect:["I don tell you say na no be my thing.","Thank you, but I no interested still.","I appreciate am, but no."],
-    goodEnd:"Okay, since you no push me, make you leave the small paper — I fit read am later.",
-    leftEnd:["Thank you for understanding, but no be today.","I go just say bye-bye for now, thank you."]},
-  {id:"rude", label:"Rude / Dismissive", blurb:"Outright hostile — the hardest one, tests your composure.",
-    weights:{smalltalk:-2, askabout:-2, share:-3, answer:-1, acknowledge:2},
-    topics:["JW FAQ","Faith and Worship"],
-    open:"Abeg comot for my front with that your Bible talk.",
-    deflect:["I don talk say I no want hear!","Na waste of my time be this.","Oga, no be today abeg."],
-    goodEnd:"Hmm... you sha get patience. Okay, talk small more.",
-    leftEnd:["I don tell you make you comot!","No come back here again abeg."]}
-];
-const convo={persona:null, difficulty:50, engagement:50, startEngagement:50, turn:0, pendingQ:null, transcript:[], active:false, ended:false};
-function personaById(id){ return PERSONAS.find(p=>p.id===id); }
-
-function convoShowSetup(){
-  document.getElementById("convo-setup").hidden=false;
-  document.getElementById("convo-live").hidden=true;
-  convoBuildPersonaGrid();
-  renderConvoStat();
-}
-function convoBuildPersonaGrid(){
-  const wrap=document.getElementById("persona-grid");
-  wrap.innerHTML="";
-  PERSONAS.forEach(p=>{
-    const b=document.createElement("button");
-    b.type="button"; b.className="persona-card";
-    b.setAttribute("aria-pressed", String(convo.persona===p.id));
-    b.innerHTML=`<b>${p.label}</b><span>${p.blurb}</span>`;
-    b.addEventListener("click",()=>{
-      convo.persona=p.id;
+      lessonState.filter=lv;
       [...wrap.children].forEach(c=>c.setAttribute("aria-pressed","false"));
       b.setAttribute("aria-pressed","true");
+      lessonsBuildRows();
     });
     wrap.appendChild(b);
   });
+  lessonsBuildRows();
+  renderLessonsStat();
 }
-document.getElementById("diff-slider").addEventListener("input",e=>{
-  convo.difficulty=+e.target.value;
-  document.getElementById("diff-value").textContent=convo.difficulty+"%";
-});
-function renderConvoStat(){
-  const done=store.get("convosDone",0);
-  document.getElementById("convo-stat").innerHTML=`<b>${done}</b> gree so far`;
-}
-document.getElementById("convo-start-btn").addEventListener("click",()=>{
-  if(!convo.persona){ convo.persona=PERSONAS[0].id; convoBuildPersonaGrid(); }
-  convoStart();
-});
-function convoStart(){
-  const p=personaById(convo.persona);
-  convo.engagement=Math.max(15, 65-Math.round(convo.difficulty*0.35));
-  convo.startEngagement=convo.engagement;
-  convo.turn=0; convo.pendingQ=null; convo.transcript=[];
-  convo.active=true; convo.ended=false;
-
-  document.getElementById("convo-setup").hidden=true;
-  document.getElementById("convo-live").hidden=false;
-  document.getElementById("convo-turn").hidden=false;
-  document.getElementById("outcome-banner").hidden=true;
-  document.getElementById("pending-q").hidden=true;
-  document.getElementById("convo-persona-name").textContent=p.label;
-  document.getElementById("convo-persona-blurb").textContent=p.blurb+" (Difficulty "+convo.difficulty+"%)";
-  document.getElementById("chat-log").innerHTML="";
-  document.getElementById("convo-answer").value="";
-
-  convoBuildMoveRow();
-  convoAppend("them", p.open);
-  convoRenderMeter();
-  convoUpdatePromptPreview();
-}
-function convoBuildMoveRow(){
-  const wrap=document.getElementById("move-row");
+function lessonsBuildRows(){
+  const wrap=document.getElementById("lesson-rows");
   wrap.innerHTML="";
-  MOVES.forEach(m=>{
+  const done=new Set(store.get("lessonsDone",[]));
+  const list = lessonState.filter==="All" ? LESSONS : LESSONS.filter(l=>l[1]===lessonState.filter);
+  list.forEach(l=>{
+    const [id,level,title,goal]=l;
     const b=document.createElement("button");
-    b.type="button"; b.textContent=m.label;
-    b.addEventListener("click",()=>convoSend(m.id));
+    b.type="button";
+    b.className="lesson-row"+(done.has(id)?" done":"");
+    b.innerHTML=
+      '<div class="lesson-row-top">'+
+        '<span class="lesson-num">'+String(id).padStart(2,"0")+'</span>'+
+        '<span class="level-badge '+levelClass(level)+'">'+level+'</span>'+
+        (done.has(id) ? '<span class="lesson-check">✓</span>' : '')+
+      '</div>'+
+      '<div class="lesson-row-title">'+title+'</div>'+
+      '<div class="lesson-row-goal">'+goal+'</div>';
+    b.addEventListener("click",()=>lessonOpen(id));
     wrap.appendChild(b);
   });
 }
-function convoAppend(who,text){
-  convo.transcript.push({who,text});
-  const el=document.createElement("div");
-  el.className="bubble "+(who==="them"?"them":"me");
-  el.textContent=text;
-  const log=document.getElementById("chat-log");
-  log.appendChild(el);
-  log.scrollTop=log.scrollHeight;
+function renderLessonsStat(){
+  const done=store.get("lessonsDone",[]).length;
+  document.getElementById("lessons-stat").innerHTML="<b>"+done+"</b> / "+LESSONS.length+" done";
 }
-function convoRenderMeter(){
-  const fill=document.getElementById("engagement-fill");
-  const pct=Math.max(0,Math.min(100,convo.engagement));
-  fill.style.width=pct+"%";
-  fill.style.background = pct<30 ? "var(--pop)" : pct<70 ? "var(--yellow)" : "var(--green)";
-  document.getElementById("engagement-label").textContent="How open dem be: "+pct+"%";
-}
-function convoSend(moveId){
-  if(!convo.active) return;
-  const p=personaById(convo.persona);
-  const text=document.getElementById("convo-answer").value.trim();
-  convoAppend("me", text || "( … )");
-  document.getElementById("convo-answer").value="";
+function lessonOpen(id){
+  lessonState.openId=id;
+  const l=LESSONS.find(x=>x[0]===id);
+  if(!l) return;
+  const [,level,title,goal,words]=l;
 
-  const weight=p.weights[moveId]||0;
-  const decay=Math.round(convo.difficulty/40);
-  convo.engagement=Math.max(0,Math.min(100, convo.engagement+weight-decay));
-  convo.turn++;
-  convo.pendingQ=null;
-  document.getElementById("pending-q").hidden=true;
-  convoRenderMeter();
+  document.getElementById("lessons-list-view").hidden=true;
+  document.getElementById("lessons-detail-view").hidden=false;
 
-  if(convo.engagement<=0){
-    convoEnd("left", p.leftEnd[Math.floor(Math.random()*p.leftEnd.length)]);
-    return;
-  }
-  if(moveId==="acknowledge" && convo.turn>=3 && (convo.engagement-convo.startEngagement)>=4){
-    convoEnd("good", p.goodEnd);
-    return;
-  }
-  if(convo.turn>=9){
-    convoEnd("neutral", "Time don pass — the gist just end there for now.");
-    return;
-  }
+  const badge=document.getElementById("lesson-d-level");
+  badge.textContent=level;
+  badge.className="level-badge "+levelClass(level);
+  document.getElementById("lesson-d-num").textContent="Lesson "+id+" / "+LESSONS.length;
+  document.getElementById("lesson-d-title").textContent=title;
+  document.getElementById("lesson-d-goal").textContent=goal;
 
-  const chance=Math.max(5, Math.min(90, convo.engagement-Math.round(convo.difficulty*0.3)));
-  if(Math.random()*100<chance){
-    const pool = p.topics ? MINISTRY.filter(m=>p.topics.includes(m[2])) : MINISTRY;
-    const q=pool[Math.floor(Math.random()*pool.length)];
-    convo.pendingQ=q;
-    convoAppend("them", q[3]);
-    document.getElementById("pending-q-text").textContent=q[3];
-    document.getElementById("pending-q-source").href=q[4];
-    document.getElementById("pending-q").hidden=false;
-  } else {
-    convoAppend("them", p.deflect[Math.floor(Math.random()*p.deflect.length)]);
-  }
-  convoUpdatePromptPreview();
+  const wrap=document.getElementById("lesson-d-words");
+  wrap.innerHTML="";
+  words.forEach(w=>{
+    const c=cardByWord(w);
+    if(!c) return;
+    const el=document.createElement("div");
+    el.className="lword-card";
+    el.innerHTML=
+      '<div class="lword-head"><b></b><span></span></div>'+
+      (c[3] ? '<div class="lword-ex"></div>' : "");
+    el.querySelector(".lword-head b").textContent=c[0];
+    el.querySelector(".lword-head span").textContent=c[1];
+    if(c[3]) el.querySelector(".lword-ex").textContent=c[3];
+    wrap.appendChild(el);
+  });
+
+  const done=new Set(store.get("lessonsDone",[]));
+  document.getElementById("lesson-complete-btn").classList.toggle("on", done.has(id));
+
+  document.getElementById("lesson-prev-btn").disabled = id<=1;
+  document.getElementById("lesson-next-btn").disabled = id>=LESSONS.length;
+
+  window.scrollTo(0,0);
 }
-function convoEnd(kind,text){
-  convo.active=false; convo.ended=true;
-  convoAppend("them", text);
-  document.getElementById("convo-turn").hidden=true;
-  document.getElementById("pending-q").hidden=true;
-  const banner=document.getElementById("outcome-banner");
-  banner.hidden=false;
-  banner.classList.toggle("lose", kind==="left");
-  document.getElementById("outcome-title").textContent =
-    kind==="good" ? "E dey work! 🎉" : kind==="left" ? "Dem comot —" : "Time don pass";
-  document.getElementById("outcome-text").textContent=text;
-  if(kind==="good"){
-    store.set("convosDone", store.get("convosDone",0)+1);
-    renderConvoStat();
-  }
-  convoUpdatePromptPreview();
-}
-document.getElementById("convo-end-btn").addEventListener("click",()=>{
-  if(!convo.active) return;
-  convoEnd("neutral","You end the gist there — no wahala, you fit try another person anytime.");
+document.getElementById("lesson-back-btn").addEventListener("click",lessonsShowList);
+document.getElementById("lesson-complete-btn").addEventListener("click",()=>{
+  const id=lessonState.openId;
+  if(!id) return;
+  const done=new Set(store.get("lessonsDone",[]));
+  done.has(id) ? done.delete(id) : done.add(id);
+  store.set("lessonsDone",[...done]);
+  lessonOpen(id);
+  renderLessonsStat();
+  renderHomeFoot();
 });
-document.getElementById("convo-new-btn").addEventListener("click",convoShowSetup);
-document.getElementById("convo-restart-btn").addEventListener("click",convoShowSetup);
-function convoBuildPrompt(){
-  const p=personaById(convo.persona);
-  const lines=convo.transcript.map(t=>(t.who==="them"?"Them: ":"Me: ")+t.text).join("\n");
-  return [
-"I'm practicing a Pidgin conversation for ministry/witnessing practice. Please check MY lines only (marked 'Me:'), not the other person's lines and not the theology.",
-"",
-`Persona: ${p?p.label:"?"} — difficulty ${convo.difficulty}%`,
-"",
-"Transcript:",
-lines || "(nothing said yet)",
-"",
-"Please: 1) say if my Pidgin lines sound natural to a native speaker or too much like translated English, 2) point out specific words or phrases to fix, 3) suggest more natural phrasing that keeps my meaning and tone, 4) keep your reply concise."
-  ].join("\n");
-}
-function convoUpdatePromptPreview(){
-  document.getElementById("convo-ai-prompt-preview").textContent=convoBuildPrompt();
-}
-document.getElementById("convo-ai-copy-btn").addEventListener("click", async ()=>{
-  const text=convoBuildPrompt();
-  const msg=document.getElementById("convo-copy-msg");
-  const details=document.getElementById("convo-ai-preview-details");
-  try{
-    await navigator.clipboard.writeText(text);
-    msg.textContent="Don copy — go paste am for the AI wey you like use.";
-  }catch(e){
-    details.open=true;
-    msg.textContent="E no fit copy by itself — open the preview below, copy am with hand.";
-  }
+document.getElementById("lesson-prev-btn").addEventListener("click",()=>{
+  if(lessonState.openId>1) lessonOpen(lessonState.openId-1);
+});
+document.getElementById("lesson-next-btn").addEventListener("click",()=>{
+  if(lessonState.openId<LESSONS.length) lessonOpen(lessonState.openId+1);
 });
 
 /* ---------------- init ---------------- */
-initLock();
 buildFilters();
-minBuildFilters();
+lessonsBuildList();
 renderHomeFoot();
 fromHash();
 </script>
